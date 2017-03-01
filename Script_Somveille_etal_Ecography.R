@@ -357,6 +357,10 @@ niche.distances.residentinBR.SH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breedi
 niche.distances.residentinNB = c(niche.distances.residentinNB.NH_WH, niche.distances.residentinNB.NH_EH, niche.distances.residentinNB.SH_WH, niche.distances.residentinNB.SH_EH)
 niche.distances.residentinBR = c(niche.distances.residentinBR.NH_WH, niche.distances.residentinBR.NH_EH, niche.distances.residentinBR.SH_WH, niche.distances.residentinBR.SH_EH)
 
+#Testing if niche tracking is smaller than if resident
+t.test(niche.distances.obs, niche.distances.residentinNB, "less")
+t.test(niche.distances.obs, niche.distances.residentinBR, "less")
+
 
 ### Figure 4 - comparing niche distance to if resident ###
 
@@ -461,8 +465,8 @@ rangeSimulations <- function(presencesAbsences, latlong, neigList, pairwiseDists
 					}
 					if(sum(neigs.proba) == 0){ neigs.proba <- rep(1,length(neigs.proba)) }
 					neigs.proba <- neigs.proba / sum(neigs.proba)
-					if(length(which(neigs.proba > 0)) >= ceiling(length(neigs)/2)){
-						block.simulated <- c(block.simulated, sample(neigs, ceiling(length(neigs)/2), prob=neigs.proba))
+					if(length(which(neigs.proba > 0)) >= ceiling(length(neigs)/4)){
+						block.simulated <- c(block.simulated, sample(neigs, ceiling(length(neigs)/4), prob=neigs.proba))
 					}else{
 						block.simulated <- c(block.simulated, neigs[which(neigs.proba>0)])
 					}
@@ -504,48 +508,40 @@ simulated.ranges_NB_SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) rangeSimula
 
 
 #Compute niche distances (using the earth mover's distance) for alternative migration options
-niche.distances.simulatedBR_NH_WH <- list()
-niche.distances.simulatedNB_NH_WH <- list()
+niche.distances.simulatedNH_WH <- list()
 for(i in 1:length(nonbreeding.nichesNH_WH)){
 	breeding.niches.simulated_NH_WH <- lapply(simulated.ranges_BR_NH_WH[[i]], function(x) nicheDensityRaster(cbind(TempNS_WH[x], PrecNS_WH[x])))
-	niche.distances.simulatedBR_NH_WH[[i]] <- mapply(function(X){ emd(X,nonbreeding.nichesNH_WH[[i]]) }, X=breeding.niches.simulated_NH_WH)
+	niche.distances.simulatedBR_NH_WH <- mapply(function(X){ emd(X,nonbreeding.nichesNH_WH[[i]]) }, X=breeding.niches.simulated_NH_WH)
 	nonbreeding.niches.simulated_NH_WH <- lapply(simulated.ranges_NB_NH_WH[[i]], function(x) nicheDensityRaster(cbind(TempNW_WH[x], PrecNW_WH[x])))
-	niche.distances.simulatedNB_NH_WH[[i]] <- mapply(function(Y){ emd(breeding.nichesNH_WH[[i]],Y) }, Y=nonbreeding.niches.simulated_NH_WH)
+	niche.distances.simulatedNB_NH_WH <- mapply(function(Y){ emd(breeding.nichesNH_WH[[i]],Y) }, Y=nonbreeding.niches.simulated_NH_WH)
+	niche.distances.simulatedNH_WH[[i]] <- c(unlist(niche.distances.simulatedBR_NH_WH), unlist(niche.distances.simulatedNB_NH_WH))
 }
-niche.distances.simulatedBR_SH_WH <- list()
-niche.distances.simulatedNB_SH_WH <- list()
+niche.distances.simulatedSH_WH <- list()
 for(i in 1:length(nonbreeding.nichesSH_WH)){
 	breeding.niches.simulated_SH_WH <- lapply(simulated.ranges_BR_SH_WH[[i]], function(x) nicheDensityRaster(cbind(TempNW_WH[x], PrecNW_WH[x])))
-	niche.distances.simulatedBR_SH_WH[[i]] <- mapply(function(X){ emd(X,nonbreeding.nichesSH_WH[[i]]) }, X=breeding.niches.simulated_SH_WH)
+	niche.distances.simulatedBR_SH_WH <- mapply(function(X){ emd(X,nonbreeding.nichesSH_WH[[i]]) }, X=breeding.niches.simulated_SH_WH)
 	nonbreeding.niches.simulated_SH_WH <- lapply(simulated.ranges_NB_SH_WH[[i]], function(x) nicheDensityRaster(cbind(TempNS_WH[x], PrecNS_WH[x])))
-	niche.distances.simulatedNB_SH_WH[[i]] <- mapply(function(Y){ emd(breeding.nichesSH_WH[[i]],Y) }, Y=nonbreeding.niches.simulated_SH_WH)
+	niche.distances.simulatedNB_SH_WH <- mapply(function(Y){ emd(breeding.nichesSH_WH[[i]],Y) }, Y=nonbreeding.niches.simulated_SH_WH)
+	niche.distances.simulatedSH_WH[[i]] <- c(unlist(niche.distances.simulatedBR_SH_WH), unlist(niche.distances.simulatedNB_SH_WH))
 }
-niche.distances.simulatedBR_NH_EH <- list()
-niche.distances.simulatedNB_NH_EH <- list()
+niche.distances.simulatedNH_EH <- list()
 for(i in 1:length(nonbreeding.nichesNH_EH)){
 	breeding.niches.simulated_NH_EH <- lapply(simulated.ranges_BR_NH_EH[[i]], function(x) nicheDensityRaster(cbind(TempNS_EH[x], PrecNS_EH[x])))
-	niche.distances.simulatedBR_NH_EH[[i]] <- mapply(function(X){ emd(X,nonbreeding.nichesNH_EH[[i]]) }, X=breeding.niches.simulated_NH_EH)
+	niche.distances.simulatedBR_NH_EH <- mapply(function(X){ emd(X,nonbreeding.nichesNH_EH[[i]]) }, X=breeding.niches.simulated_NH_EH)
 	nonbreeding.niches.simulated_NH_EH <- lapply(simulated.ranges_NB_NH_EH[[i]], function(x) nicheDensityRaster(cbind(TempNW_EH[x], PrecNW_EH[x])))
-	niche.distances.simulatedNB_NH_EH[[i]] <- mapply(function(Y){ emd(breeding.nichesNH_EH[[i]],Y) }, Y=nonbreeding.niches.simulated_NH_EH)
+	niche.distances.simulatedNB_NH_EH <- mapply(function(Y){ emd(breeding.nichesNH_EH[[i]],Y) }, Y=nonbreeding.niches.simulated_NH_EH)
+	niche.distances.simulatedNH_EH[[i]] <- c(unlist(niche.distances.simulatedBR_NH_EH), unlist(niche.distances.simulatedNB_NH_EH))
 }
-niche.distances.simulatedBR_SH_EH <- list()
-niche.distances.simulatedNB_SH_EH <- list()
+niche.distances.simulatedSH_EH <- list()
 for(i in 1:length(nonbreeding.nichesSH_EH)){
 	breeding.niches.simulated_SH_EH <- lapply(simulated.ranges_BR_SH_EH[[i]], function(x) nicheDensityRaster(cbind(TempNW_EH[x], PrecNW_EH[x])))
-	niche.distances.simulatedBR_SH_EH[[i]] <- mapply(function(X){ emd(X,nonbreeding.nichesSH_EH[[i]]) }, X=breeding.niches.simulated_SH_EH)
+	niche.distances.simulatedBR_SH_EH <- mapply(function(X){ emd(X,nonbreeding.nichesSH_EH[[i]]) }, X=breeding.niches.simulated_SH_EH)
 	nonbreeding.niches.simulated_SH_EH <- lapply(simulated.ranges_NB_SH_EH[[i]], function(x) nicheDensityRaster(cbind(TempNS_EH[x], PrecNS_EH[x])))
-	niche.distances.simulatedNB_SH_EH[[i]] <- mapply(function(Y){ emd(breeding.nichesSH_EH[[i]],Y) }, Y=nonbreeding.niches.simulated_SH_EH)
+	niche.distances.simulatedNB_SH_EH <- mapply(function(Y){ emd(breeding.nichesSH_EH[[i]],Y) }, Y=nonbreeding.niches.simulated_SH_EH)
+	niche.distances.simulatedSH_EH[[i]] <- c(unlist(niche.distances.simulatedBR_SH_EH), unlist(niche.distances.simulatedNB_SH_EH))
 }
-#load("simulated_niche_distances.RData")
-niche.distances.simulatedNH_WH <- mapply(function(X,Y){ c(X,Y) }, X=niche.distances.simulatedBR_NH_WH, Y=niche.distances.simulatedNB_NH_WH)
-niche.distances.simulatedNH_WH <- split(niche.distances.simulatedNH_WH, rep(1:ncol(niche.distances.simulatedNH_WH),each=nrow(niche.distances.simulatedNH_WH)))
-niche.distances.simulatedSH_WH <- mapply(function(X,Y){ c(X,Y) }, X=niche.distances.simulatedBR_SH_WH, Y=niche.distances.simulatedNB_SH_WH)
-niche.distances.simulatedSH_WH <- split(niche.distances.simulatedSH_WH, rep(1:ncol(niche.distances.simulatedSH_WH),each=nrow(niche.distances.simulatedSH_WH)))
-niche.distances.simulatedNH_EH <- mapply(function(X,Y){ c(X,Y) }, X=niche.distances.simulatedBR_NH_EH, Y=niche.distances.simulatedNB_NH_EH)
-niche.distances.simulatedNH_EH <- split(niche.distances.simulatedNH_EH, rep(1:ncol(niche.distances.simulatedNH_EH),each=nrow(niche.distances.simulatedNH_EH)))
-niche.distances.simulatedSH_EH <- mapply(function(X,Y){ c(X,Y) }, X=niche.distances.simulatedBR_SH_EH, Y=niche.distances.simulatedNB_SH_EH)
-niche.distances.simulatedSH_EH <- split(niche.distances.simulatedSH_EH, rep(1:ncol(niche.distances.simulatedSH_EH),each=nrow(niche.distances.simulatedSH_EH)))
 niche.distances.simulated <- c(niche.distances.simulatedNH_WH, niche.distances.simulatedNH_EH, niche.distances.simulatedSH_WH, niche.distances.simulatedSH_EH)
+#load("simulated_niche_distances.RData")
 
 
 #Compute geographical (migration) distance for alternative migration options
@@ -674,8 +670,8 @@ hexgrid2 <- rbind(hexgridWH[match(hexidWH, hexgridWH@data[,1]),], hexgridEH[matc
 par(mfrow=c(2,2), mar=c(2.5,2.5,0.2,1.5), mgp=c(1.5,0.5,0))
 plot(hexgridEH, col="grey", border = "grey")
 plot(hexgridEH[match(PresAbs_BR_NH[which(PresAbs_BR_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[181]][[12]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[181]][[20]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[181]][[3]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[181]][[8]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
 mtext("A", cex=1.8, side=3, line=-1.5, at=-50)
 plot(scale(c(geo.distances.obs[181], geo.distances.simulated[[181]])), scale(c(niche.distances.obs[181], niche.distances.simulated[[181]])), pch=20, axes=F, xlab="Geographic distance", ylab = "Niche distance", cex.lab=1.2, add=F)
 axis(1,at=c(-2,-1,0,1,2), labels=c(-2,-1,0,1,2))
@@ -686,8 +682,8 @@ points(scale(c(geo.distances.obs[181], geo.distances.simulated[[181]]))[1], scal
 mtext("C", cex=1.8, side=3, line=-1.5, at=-2.35)
 plot(hexgridEH, col="grey", border = "grey")
 plot(hexgridEH[match(PresAbs_NB_NH[which(PresAbs_NB_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[181]][[1]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
 plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[181]][[7]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[181]][[70]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
 mtext("B", cex=1.8, side=3, line=-1.5, at=-50)
 geo_niche_resource_schrenck <- scale(c(geo.distances.obs[181], geo.distances.simulated[[181]])) + scale(c(niche.distances.obs[181], niche.distances.simulated[[181]])) + scale(c(resource.scarcity.obs[181], resource.scarcity.simulated[[181]]))
 plot(geo_niche_resource_schrenck, rnorm(length(geo_niche_resource_schrenck), 1, 0.1), pch=20, axes=F, xlab="Niche distance + geographic distance + resource scarcity", ylab = "", ylim=c(0,2), cex.lab=1.2)
