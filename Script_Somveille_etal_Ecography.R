@@ -6,8 +6,7 @@ library(move)
 library(vioplot)
 library(igraph)
 
-setwd("/Users/mariussomveille/Desktop/PhD/Chapter 3 – niche/Submission process/Ecography/Data")
-
+setwd("~/Data")
 
 
 
