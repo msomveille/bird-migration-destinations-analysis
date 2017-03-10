@@ -25,6 +25,7 @@ PresAbs_BR_NH <- read.table("PresAbs_BR_NH.txt", header=T)  # Breeding range of 
 PresAbs_NB_NH <- read.table("PresAbs_NB_NH.txt", header=T)  # Non-breeding range of species breeding during the northern summer
 PresAbs_BR_SH <- read.table("PresAbs_BR_SH.txt", header=T)  # Breeding range of species breeding during the northern winter
 PresAbs_NB_SH <- read.table("PresAbs_NB_SH.txt", header=T)  # Non-breeding range of species breeding during the northern winter
+PresAbs_residents <- read.table("PresAbs_res.txt", header=T)  # Non-breeding range of species breeding during the northern winter
 
 #Remove species that do not have at least 50% of either their breeding or non-breeding range on land
 sppinfo <- read.csv("List_species_both&coastal.csv", sep=";", header=T)
@@ -93,6 +94,7 @@ PresAbs_BR_NH <- PresAbs_BR_NH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0)
 PresAbs_NB_NH <- PresAbs_NB_NH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]
 PresAbs_BR_SH <- PresAbs_BR_SH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]
 PresAbs_NB_SH <- PresAbs_NB_SH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]
+PresAbs_residents <- PresAbs_residents[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]
 
 PresAbs_BR_NH_EH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),]
 PresAbs_NB_NH_EH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_NH[,1]),]
@@ -203,6 +205,10 @@ if(length(toremove_SH_EH) > 0){
 #names(selectedSpeciesNH_both)
 
 
+#Relationship between richness resident species and NDVI
+richness.residents <- apply(PresAbs_residents[,-1], 1, sum)
+minNDVI <- pmin(NDVI_NS, NDVI_NW)
+summary(lm(richness.residents ~ minNDVI-1))
 
 
 
@@ -359,6 +365,31 @@ niche.distances.residentinBR = c(niche.distances.residentinBR.NH_WH, niche.dista
 #Testing if niche tracking is smaller than if resident
 t.test(niche.distances.obs, niche.distances.residentinNB, "less")
 t.test(niche.distances.obs, niche.distances.residentinBR, "less")
+
+
+#Computing resource scarcity for every migratory species
+breeding.resource.scarcity.residentinNB.NH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))
+nonbreeding.resource.scarcity.residentinBR.NH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))
+resource.scarcity.residentinNB.NH_WH <- breeding.resource.scarcity.residentinNB.NH_WH + nonbreeding.resource.scarcityNH_WH
+resource.scarcity.residentinBR.NH_WH <- breeding.resource.scarcityNH_WH + nonbreeding.resource.scarcity.residentinBR.NH_WH
+breeding.resource.scarcity.residentinNB.SH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))
+nonbreeding.resource.scarcity.residentinBR.SH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))
+resource.scarcity.residentinNB.SH_WH <- breeding.resource.scarcity.residentinNB.SH_WH + nonbreeding.resource.scarcitySH_WH
+resource.scarcity.residentinBR.SH_WH <- breeding.resource.scarcitySH_WH + nonbreeding.resource.scarcity.residentinBR.SH_WH
+breeding.resource.scarcity.residentinNB.NH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) mean(resourceScarcity_NS_EH[which(x==1)]))
+nonbreeding.resource.scarcity.residentinBR.NH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) mean(resourceScarcity_NW_EH[which(x==1)]))
+resource.scarcity.residentinNB.NH_EH <- breeding.resource.scarcity.residentinNB.NH_EH + nonbreeding.resource.scarcityNH_EH
+resource.scarcity.residentinBR.NH_EH <- breeding.resource.scarcityNH_EH + nonbreeding.resource.scarcity.residentinBR.NH_EH
+breeding.resource.scarcity.residentinNB.SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) mean(resourceScarcity_NW_EH[which(x==1)]))
+nonbreeding.resource.scarcity.residentinBR.SH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) mean(resourceScarcity_NS_EH[which(x==1)]))
+resource.scarcity.residentinNB.SH_EH <- breeding.resource.scarcity.residentinNB.SH_EH + nonbreeding.resource.scarcitySH_EH
+resource.scarcity.residentinBR.SH_EH <- breeding.resource.scarcitySH_EH + nonbreeding.resource.scarcity.residentinBR.SH_EH
+resource.scarcity.residentinNB <- c(resource.scarcity.residentinNB.NH_WH, resource.scarcity.residentinNB.NH_EH, resource.scarcity.residentinNB.SH_WH, resource.scarcity.residentinNB.SH_EH)
+resource.scarcity.residentinBR <- c(resource.scarcity.residentinBR.NH_WH, resource.scarcity.residentinBR.NH_EH, resource.scarcity.residentinBR.SH_WH, resource.scarcity.residentinBR.SH_EH)
+
+#Testing if resource scarcity is smaller than if resident
+t.test(resource.scarcity.obs, resource.scarcity.residentinNB, "less")
+t.test(resource.scarcity.obs, resource.scarcity.residentinBR, "less")
 
 
 ### Figure 4 - comparing niche distance to if resident ###
