@@ -288,45 +288,46 @@ resource.scarcity.obs <- c(resource.scarcityNH_WH, resource.scarcityNH_EH, resou
 
 ### Figure 3 - trade-off ### 
 
-par(mfrow=c(2,2), mar=c(2.5,3,1.5,3), mgp=c(1.5,0.5,0))
+jpeg("Fig3.jpg", width=800, height=600, quality=100)
+par(mfrow=c(2,2), mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))
 # Relationship between geographical distance and niche distance
-plot(sqrt(geo.distances.obs), niche.distances.obs, xlim=c(0,120), ylim=c(0,3.1), xlab="Geographical distance (square-root)", ylab="Niche distance", main="", xaxt="n", axes=F, pch=20, cex=0.7)
+plot(sqrt(geo.distances.obs), niche.distances.obs, xlim=c(0,120), ylim=c(0,3.1), xlab="Geographical distance (square-root)", ylab="Niche distance", main="", xaxt="n", axes=F, pch=20, cex=0.9, cex.lab=1.3)
 axis(side=2)
 axis(side=1)
 mod = lm(niche.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")
-mtext("A", cex=1.3, side=3, line=0, at=-22)
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.6, at=30)
+mtext("A", cex=1.5, side=3, line=0, at=-15)
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1.3, side=3, line=-2.5, at=30)
 # Relationship between niche distance and resource scarcity
-plot(niche.distances.obs, resource.scarcity.obs, xlim=c(0,3.1), ylim=c(-63,21), xlab="Niche distance", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7)
+plot(niche.distances.obs, resource.scarcity.obs, xlim=c(0,3.1), ylim=c(-63,21), xlab="Niche distance", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.9, cex.lab=1.3)
 axis(side=2)
 axis(side=1)
 mod = lm(resource.scarcity.obs ~ niche.distances.obs + I(niche.distances.obs^2))
 lines(sort(niche.distances.obs), fitted(mod)[order(niche.distances.obs)], type="l", col="red")
-mtext("B", cex=1.3, side=3, line=0, at=-0.55)
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-6, at=2.6)
+mtext("B", cex=1.5, side=3, line=0, at=-0.35)
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1.3, side=3, line=-11, at=2.6)
 # Relationship between geographical distance and resource scarcity
-plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7)
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.9, cex.lab=1.3)
 axis(side=2)
 axis(side=1)
 mod = lm(resource.scarcity.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")
-mtext("C", cex=1.3, side=3, line=0, at=-22)
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.5, at=90)
+mtext("C", cex=1.5, side=3, line=0, at=-15)
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1.3, side=3, line=-2.5, at=90)
 # Relationship between the three factors
 hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")
 axis(side=4)
 axis(side=1)
-par(new=T, mar=c(2.5,3,1.5,3), mgp=c(1.5,0.5,0))
-plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7, col="yellow")
+par(new=T, mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.9, cex.lab=1.3, col="yellow")
 axis(side=2)
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[4])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[4])], col="orange", cex=0.7, pch=20)
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[3])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[3])], col="red", cex=0.7, pch=20)
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[2])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[2])], col="brown4", cex=0.7, pch=20)
-mtext("D", cex=1.3, side=3, line=0, at=-22)
-mtext("Number of species", side=4, line=1.4, cex=0.85,las=0)
-legend("topright", inset=.005, bg="white", box.col="white", title="Niche distance", c(paste("<", round(quantile(niche.distances.obs)[2], 2), sep=" "), paste(round(quantile(niche.distances.obs)[2], 2), round(quantile(niche.distances.obs)[3], 2), sep="–"), paste(round(quantile(niche.distances.obs)[3], 2), round(quantile(niche.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(niche.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.8)
-
+points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[4])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[4])], col="orange", cex=0.9, cex.lab=1.1, pch=20)
+points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[3])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[3])], col="red", cex=0.9, cex.lab=1.1, pch=20)
+points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[2])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[2])], col="brown4", cex=0.9, cex.lab=1.1, pch=20)
+mtext("D", cex=1.5, side=3, line=0, at=-15)
+mtext("Number of species", side=4, line=1.4, cex=1.1,las=0)
+legend("topright", inset=.005, bg="white", box.col="white", title="Niche distance", c(paste("<", round(quantile(niche.distances.obs)[2], 2), sep=" "), paste(round(quantile(niche.distances.obs)[2], 2), round(quantile(niche.distances.obs)[3], 2), sep="–"), paste(round(quantile(niche.distances.obs)[3], 2), round(quantile(niche.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(niche.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=1.3)
+dev.off()
 
 
 
@@ -393,7 +394,7 @@ t.test(resource.scarcity.obs, resource.scarcity.residentinBR, "less")
 
 
 ### Figure 4 - comparing niche distance to if resident ###
-
+jpeg("Fig4.jpg", width=500, height=300, quality=100)
 par(mfrow=c(1,1), mar=c(3,4,1.5,3), mgp=c(1.5,0.5,0), las=1, bty="l")
 plot(0:1,0:1,type="n",xlim=c(0.5,2.5),ylim=range(c((niche.distances.obs - niche.distances.residentinNB), (niche.distances.obs - niche.distances.residentinBR))), axes=F, ann=F)
 vioplot((niche.distances.obs - niche.distances.residentinNB), (niche.distances.obs - niche.distances.residentinBR), col="grey", names=c("Versus staying resident\nin non-breeding grounds", "Versus staying resident\nin breeding grounds"), add=T)
@@ -401,7 +402,7 @@ abline(h=0, lty = 3)
 axis(side=1, at=1:2, labels=c("Versus staying resident\nin non-breeding grounds", "Versus staying resident\nin breeding grounds"), line=1, lwd=0)
 axis(side=2, at=c(-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5), labels=c(-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5))
 mtext("Difference in niche distance", side=2, line=2.5, cex=1.2,las=0)
-
+dev.off()
 
 
 
@@ -697,6 +698,8 @@ hexidEH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAb
 hexgrid2 <- rbind(hexgridWH[match(hexidWH, hexgridWH@data[,1]),], hexgridEH[match(hexidEH, hexgridEH@data[,1]),])
 
 #Plot
+jpeg("Fig4.jpg", width=800, height=600, quality=100)
+#postscript("Fig4.ps", width=74, height=48)
 par(mfrow=c(2,2), mar=c(2.5,2.5,0.2,1.5), mgp=c(1.5,0.5,0))
 plot(hexgridEH, col="grey", border = "grey")
 plot(hexgridEH[match(PresAbs_BR_NH[which(PresAbs_BR_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
@@ -721,43 +724,53 @@ axis(1,at=c(-3,-2,-1,0,1,2,3), labels=c(-3,-2,-1,0,1,2,3))
 abline(v=geo_niche_resource_schrenck[1], col="green")
 points(geo_niche_resource_schrenck[1], 1, pch=20, ylim=c(0,2), col="red3", cex=2.5)
 mtext("D", cex=1.8, side=3, line=-1.5, at=-3.5)
-
+dev.off()
 
 
 ### Figure 5 - histograms of ranks ###
 
-par(mfrow=c(3,3), mar=c(4.5,3.5,1.5,0.5), mgp=c(2,0.5,0))
-hist(ranks_niche, main="", ylab="Number of species", xlab="Scaled rank for niche distance", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("A", cex=1.3, side=3, line=-0.25, at=-0.2)
+jpeg("Fig5.jpg", width=1000, height=700, quality=100)
+par(mfrow=c(3,3), mar=c(5.5,3.5,1.8,0.5), mgp=c(2,0.5,0))
+hist(ranks_niche, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Number of species", cex=1.1, side=2, line=2, at=70)
+mtext("Scaled rank for niche distance", cex=1.1, side=1, line=2, at=0.5)
+mtext("A", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-hist(ranks_geo, main="", ylab="", xlab="Scaled rank for geographic distance", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("B", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+hist(ranks_geo, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for geographical distance", cex=1.1, side=1, line=2, at=0.5)
+mtext("B", cex=1.8, side=3, line=-0.25, at=-0.1)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-hist(ranks_resource, main="", ylab="", xlab="Scaled rank for resource scarcity", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("C", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+hist(ranks_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for resource scarcity", cex=1.1, side=1, line=2, at=0.5)
+mtext("C", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-par(new=F, mar=c(4.5,3.5,1.5,0.5), mgp=c(3,0.5,0))
-hist(ranks_geo_niche, main="", ylab="", xlab="Scaled rank for niche distance \n+ geographic distance", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("Number of species", cex=0.9, side=2, line=2, at=135)
-mtext("D", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+par(new=F, mar=c(5.5,3.5,1.8,0.5), mgp=c(3,0.5,0))
+hist(ranks_geo_niche, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for niche distance \n+ geographical distance", cex=1.1, side=1, line=4, at=0.5)
+mtext("Number of species", cex=1.1, side=2, line=2, at=135)
+mtext("D", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-hist(ranks_niche_resource, main="", ylab="", xlab="Scaled rank for niche distance \n+ resource scarcity", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("E", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+hist(ranks_niche_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for niche distance \n+ resource scarcity", cex=1.1, side=1, line=4, at=0.5)
+mtext("E", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-hist(ranks_geo_resource, main="", ylab="", xlab="Scaled rank for geographic distance \n+ resource scarcity", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("F", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+hist(ranks_geo_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for geographical distance \n+ resource scarcity", cex=1.1, side=1, line=4, at=0.5)
+mtext("F", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-hist(ranks_geo_niche_resource, main="", ylab="", xlab="Scaled rank for niche distance \n+ geographic distance + resource scarcity", xlim=c(0,1), cex.lab=1.3, col="grey", border="white")
-mtext("G", cex=1.3, side=3, line=-0.25, at=-0.2)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+hist(ranks_geo_niche_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1.6, cex.axis=1.2, col="grey", border="white")
+mtext("Scaled rank for niche distance \n+ geographical distance + resource scarcity", cex=1.1, side=1, line=4, at=0.5)
+mtext("G", cex=1.8, side=3, line=-0.25, at=-0.12)
 abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-2.5, at=0.7)
-mtext("Number of species", cex=0.9, side=2, line=2, at=155)
+mtext("P < 0.0001", cex=1.2, side=3, line=-5, at=0.7)
+mtext("Number of species", cex=1.1, side=2, line=2, at=155)
+dev.off()
 
 #Kolmogorov-Smirnov tests of whether the distribution of ranks is left-skewed wompared to the uniform distribution
 ks.test(ranks_niche, runif(100000,0,1), alternative="greater")$p.value
@@ -823,19 +836,20 @@ hex.weightBR <- c(hex.weight_BR_WH, hex.weight_BR_EH)
 hex.weightNB <- c(hex.weight_NB_WH, hex.weight_NB_EH)
 
 #Plot weighted richness
-par(mfrow=c(2,2), mar=c(0.1,0.1,1.2,0.1), mgp=c(1.5,0.5,0))
+jpeg("Fig6.jpg", width=1200, height=800, quality=100)
+par(mfrow=c(2,2), mar=c(0.1,0.1,1.4,0.1), mgp=c(1.5,0.5,0))
 rbPal <- colorRampPalette(c("yellow", "red3"))
 datcol <- rbPal(5)[as.numeric(cut(hex.weightBR, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
 datcol[which(is.na(datcol)==T)] <- "white"
 plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("A", cex=1.3, side=3, line=-2, at=-180)
-mtext("Breeding season", cex=1.1, side=3, line=0.15, at=0)
-legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Average rank\nof migrants", c("> 0.4","0.3–0.4", "0.2–0.3", "0.1–0.2", "0–0.1", "No species"), fill=c(rev(rbPal(5)),"white"), cex=0.8)
+mtext("A", cex=1.9, side=3, line=-2, at=-180)
+mtext("Breeding season", cex=1.5, side=3, line=0.15, at=0)
+legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Average rank\nof migrants", c("> 0.4","0.3–0.4", "0.2–0.3", "0.1–0.2", "0–0.1", "No species"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
 datcol <- rbPal(5)[as.numeric(cut(hex.weightNB, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
 datcol[which(is.na(datcol)==T)] <- "white"
 plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("B", cex=1.3, side=3, line=-2, at=-180)
-mtext("Non-breeding season", cex=1.1, side=3, line=0.15, at=0)
+mtext("B", cex=1.9, side=3, line=-2, at=-180)
+mtext("Non-breeding season", cex=1.5, side=3, line=0.15, at=0)
 
 #Plot observed richness in migrants
 PresAbs_BR_WH <- cbind(PresAbs_BR_NH_WH2, PresAbs_BR_SH_WH2)
@@ -848,13 +862,13 @@ rbPal <- colorRampPalette(c("yellow3", "dark green"))
 datcol <- rbPal(5)[as.numeric(cut(mbr, breaks=c(0.9,25,50,75,100,150)))]
 datcol[which(is.na(datcol)==T)] <- "white"
 plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("C", cex=1.3, side=3, line=-2, at=-180)
-legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Richness\nin migrants", c("> 100","75–100", "50–75", "25–50", "1–25", "0"), fill=c(rev(rbPal(5)),"white"), cex=0.8)
+mtext("C", cex=1.9, side=3, line=-2, at=-180)
+legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Richness\nin migrants", c("> 100","75–100", "50–75", "25–50", "1–25", "0"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
 datcol <- rbPal(5)[as.numeric(cut(mnb, breaks=c(0.9,25,50,75,100,150)))]
 datcol[which(is.na(datcol)==T)] <- "white"
 plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("D", cex=1.3, side=3, line=-2, at=-180)
-
+mtext("D", cex=1.9, side=3, line=-2, at=-180)
+dev.off()
 
 
 ### Figure 7 - Weighted arrows maps  ###
@@ -869,6 +883,7 @@ centroids.nonbreeding.grounds_2 <- centroids.nonbreeding.grounds[which(ranks_geo
 centroids.breeding.grounds_3 <- centroids.breeding.grounds[which(ranks_geo_niche_resource > 0.5),]
 centroids.nonbreeding.grounds_3 <- centroids.nonbreeding.grounds[which(ranks_geo_niche_resource > 0.5),]
 #Plot
+jpeg("Fig7.jpg", width=600, height=1000, quality=100)
 par(mfrow=c(3,1), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
 plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
 points(centroids.breeding.grounds_1, pch=20, col="red", cex=0.3)
@@ -877,8 +892,8 @@ for(i in 1:length(centroids.breeding.grounds_1[,1])){
 	inter <- gcIntermediate(centroids.breeding.grounds_1[i,], centroids.nonbreeding.grounds_1[i,], n=50, addStartEnd=T)
 	lines(inter, lwd=1, col="yellow")
 }
-mtext("A", cex=1.3, side=3, line=-2.2, at=-180)
-mtext("Scaled rank < 0.1", cex=1, side=1, line=-2.2, at=25)
+mtext("A", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("Scaled rank < 0.1", cex=1.5, side=1, line=-2.2, at=25)
 plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
 points(centroids.breeding.grounds_2, pch=20, col="red", cex=0.3)
 points(centroids.nonbreeding.grounds_2, pch=20, col="blue", cex=0.3)
@@ -886,8 +901,8 @@ for(i in 1:length(centroids.breeding.grounds_2[,1])){
 	inter <- gcIntermediate(centroids.breeding.grounds_2[i,], centroids.nonbreeding.grounds_2[i,], n=50, addStartEnd=T)
 	lines(inter, lwd=1, col="orange")
 }
-mtext("B", cex=1.3, side=3, line=-2.2, at=-180)
-mtext("0.1 <= Scaled rank <= 0.5", cex=1, side=1, line=-2.2, at=25)
+mtext("B", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("0.1 <= Scaled rank <= 0.5", cex=1.5, side=1, line=-2.2, at=25)
 plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
 points(centroids.breeding.grounds_3, pch=20, col="red", cex=0.3)
 points(centroids.nonbreeding.grounds_3, pch=20, col="blue", cex=0.3)
@@ -895,11 +910,9 @@ for(i in 1:length(centroids.breeding.grounds_3[,1])){
 	inter <- gcIntermediate(centroids.breeding.grounds_3[i,], centroids.nonbreeding.grounds_3[i,], n=50, addStartEnd=T)
 	lines(inter, lwd=1, col="brown4")
 }
-mtext("C", cex=1.3, side=3, line=-2.2, at=-180)
-mtext("Scaled rank > 0.5", cex=1, side=1, line=-2.2, at=25)
-
-
-
+mtext("C", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("Scaled rank > 0.5", cex=1.5, side=1, line=-2.2, at=25)
+dev.off()
 #Export excel table for appendix of publication
 species.names <- c(names(PresAbs_BR_NH_WH2), names(PresAbs_BR_NH_EH2), names(PresAbs_BR_SH_WH2), names(PresAbs_BR_SH_EH2))
 longitudinal.hemisphere <- c(rep("WH", length(PresAbs_BR_NH_WH2[1,])), rep("EH", length(PresAbs_BR_NH_EH2[1,])), rep("WH", length(PresAbs_BR_SH_WH2[1,])), rep("EH", length(PresAbs_BR_SH_EH2[1,])))
