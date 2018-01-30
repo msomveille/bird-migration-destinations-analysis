@@ -796,6 +796,734 @@ for(i in 1:length(geo.distances.simulated)){
 }
 
 
+## Analysis of simulated migration destination that are performing better than the observed one
+
+## Migration distance
+ 
+geo.distances.obs_WH <- c(geo.distancesNH_WH, geo.distancesSH_WH) 
+geo.distances.obs_EH <- c(geo.distancesNH_EH, geo.distancesSH_EH)
+thermal.distances.obs_WH <- c(thermal.distancesNH_WH, thermal.distancesSH_WH) 
+thermal.distances.obs_EH <- c(thermal.distancesNH_EH, thermal.distancesSH_EH) 
+resource.scarcity.obs_WH <- c(resource.scarcityNH_WH, resource.scarcitySH_WH) 
+resource.scarcity.obs_EH <- c(resource.scarcityNH_EH, resource.scarcitySH_EH) 
+geo.distances.simulated_WH <- c(geo.distances.simulatedNH_WH, geo.distances.simulatedSH_WH)
+geo.distances.simulated_EH <- c(geo.distances.simulatedNH_EH, geo.distances.simulatedSH_EH)
+thermal.distances.simulated_WH <- c(thermal.distances.simulatedNH_WH, thermal.distances.simulatedSH_WH)
+thermal.distances.simulated_EH <- c(thermal.distances.simulatedNH_EH, thermal.distances.simulatedSH_EH)
+resource.scarcity.simulated_WH <- c(resource.scarcity.simulatedNH_WH, resource.scarcity.simulatedSH_WH)
+resource.scarcity.simulated_EH <- c(resource.scarcity.simulatedNH_EH, resource.scarcity.simulatedSH_EH)
+
+geo_best_simu_brsim_WH <- list()
+geo_best_simu_nbsim_WH <- list()
+for(i in 1:length(geo.distances.simulated_WH)){
+	geo_thermal_resource <- scale(c(geo.distances.obs_WH[i], geo.distances.simulated_WH[[i]])) + scale(c(thermal.distances.obs_WH[i], thermal.distances.simulated_WH[[i]])) + scale(c(resource.scarcity.obs_WH[i], resource.scarcity.simulated_WH[[i]]))
+	geo_best_simu_brsim_WH[[i]] <- which(geo_thermal_resource[2:101] < geo_thermal_resource[1])
+	geo_best_simu_nbsim_WH[[i]] <- which(geo_thermal_resource[102:201] < geo_thermal_resource[1])
+}
+geo_best_simu_brsim_EH <- list()
+geo_best_simu_nbsim_EH <- list()
+for(i in 1:length(geo.distances.simulated_EH)){
+	geo_thermal_resource <- scale(c(geo.distances.obs_EH[i], geo.distances.simulated_EH[[i]])) + scale(c(thermal.distances.obs_EH[i], thermal.distances.simulated_EH[[i]])) + scale(c(resource.scarcity.obs_EH[i], resource.scarcity.simulated_EH[[i]]))
+	geo_best_simu_brsim_EH[[i]] <- which(geo_thermal_resource[2:101] < geo_thermal_resource[1])
+	geo_best_simu_nbsim_EH[[i]] <- which(geo_thermal_resource[102:201] < geo_thermal_resource[1])
+}
+
+geo_best_simu_brsim_dist_WH <- list()
+geo_best_simu_nbsim_dist_WH <- list()
+for(i in 1:length(geo.distances.simulated_WH)){
+	geo_best_simu_brsim_dist_WH[[i]] <- geo.distances.simulated_WH[[i]][1:100][geo_best_simu_brsim_WH[[i]]]
+	geo_best_simu_nbsim_dist_WH[[i]] <- geo.distances.simulated_WH[[i]][101:200][geo_best_simu_nbsim_WH[[i]]]
+}
+geo_best_simu_brsim_dist_EH <- list()
+geo_best_simu_nbsim_dist_EH <- list()
+for(i in 1:length(geo.distances.simulated_EH)){
+	geo_best_simu_brsim_dist_EH[[i]] <- geo.distances.simulated_EH[[i]][1:100][geo_best_simu_brsim_EH[[i]]]
+	geo_best_simu_nbsim_dist_EH[[i]] <- geo.distances.simulated_EH[[i]][101:200][geo_best_simu_nbsim_EH[[i]]]
+}
+
+geo_best_simu_brsim_dist_diff_WH <- list()
+geo_best_simu_nbsim_dist_diff_WH <- list()
+for(i in 1:length(geo_best_simu_brsim_dist_WH)){
+	geo_best_simu_brsim_dist_diff_WH[[i]] <- geo_best_simu_brsim_dist_WH[[i]] - geo.distances.obs_WH[i]
+	geo_best_simu_nbsim_dist_diff_WH[[i]] <- geo_best_simu_nbsim_dist_WH[[i]] - geo.distances.obs_WH[i]
+}
+geo_best_simu_brsim_dist_diff_EH <- list()
+geo_best_simu_nbsim_dist_diff_EH <- list()
+for(i in 1:length(geo_best_simu_brsim_dist_EH)){
+	geo_best_simu_brsim_dist_diff_EH[[i]] <- geo_best_simu_brsim_dist_EH[[i]] - geo.distances.obs_EH[i]
+	geo_best_simu_nbsim_dist_diff_EH[[i]] <- geo_best_simu_nbsim_dist_EH[[i]] - geo.distances.obs_EH[i]
+}
+
+
+geo_best_simu_brsim_dist_diff_mean_WH <- unlist(lapply(geo_best_simu_brsim_dist_diff_WH, mean))
+geo_best_simu_nbsim_dist_diff_mean_WH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_WH, mean))
+geo_best_simu_brsim_dist_diff_mean_EH <- unlist(lapply(geo_best_simu_brsim_dist_diff_EH, mean))
+geo_best_simu_nbsim_dist_diff_mean_EH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_EH, mean))
+
+best_simu_brsim_number_WH <- unlist(lapply(geo_best_simu_brsim_dist_diff_WH, length))
+best_simu_nbsim_number_WH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_WH, length))
+best_simu_brsim_number_EH <- unlist(lapply(geo_best_simu_brsim_dist_diff_EH, length))
+best_simu_nbsim_number_EH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_EH, length))
+
+
+
+
+## Migration longitude
+
+lon_obs_NH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
+	lon_obs_NH_WH[i] <- centroids.breeding.groundsNH_WH[i,1] - centroids.nonbreeding.groundsNH_WH[i,1]
+}
+lon_obs_SH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
+	lon_obs_SH_WH[i] <- centroids.breeding.groundsSH_WH[i,1] - centroids.nonbreeding.groundsSH_WH[i,1]
+}
+lon_obs_NH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
+	lon_obs_NH_EH[i] <- centroids.breeding.groundsNH_EH[i,1] - centroids.nonbreeding.groundsNH_EH[i,1]
+}
+lon_obs_SH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
+	lon_obs_SH_EH[i] <- centroids.breeding.groundsSH_EH[i,1] - centroids.nonbreeding.groundsSH_EH[i,1]
+}
+lon_obs_WH <- c(lon_obs_NH_WH, lon_obs_SH_WH)
+lon_obs_EH <- c(lon_obs_NH_EH, lon_obs_SH_EH)
+
+lat_obs_NH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
+	lat_obs_NH_WH[i] <- abs(centroids.breeding.groundsNH_WH[i,2] - centroids.nonbreeding.groundsNH_WH[i,2])
+}
+lat_obs_SH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
+	lat_obs_SH_WH[i] <- abs(centroids.breeding.groundsSH_WH[i,2] - centroids.nonbreeding.groundsSH_WH[i,2])
+}
+lat_obs_NH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
+	lat_obs_NH_EH[i] <- abs(centroids.breeding.groundsNH_EH[i,2] - centroids.nonbreeding.groundsNH_EH[i,2])
+}
+lat_obs_SH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
+	lat_obs_SH_EH[i] <- abs(centroids.breeding.groundsSH_EH[i,2] - centroids.nonbreeding.groundsSH_EH[i,2])
+}
+lat_obs_WH <- c(lat_obs_NH_WH, lat_obs_SH_WH)
+lat_obs_EH <- c(lat_obs_NH_EH, lat_obs_SH_EH)
+
+
+
+lon_sim_NH_WH_nbsim <- list()
+lon_sim_NH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_NH_WH[[i]][[j]][1] - centroids.nonbreeding.groundsNH_WH[i,1]
+	}
+	lon_sim_NH_WH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_NH_WH[[i]][[j]][1] - centroids.breeding.groundsNH_WH[i,1]
+	}
+	lon_sim_NH_WH_brsim[[i]] <- brsim
+}
+lon_sim_SH_WH_nbsim <- list()
+lon_sim_SH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_WH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_SH_WH[[i]][[j]][1] - centroids.nonbreeding.groundsSH_WH[i,1]
+	}
+	lon_sim_SH_WH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_SH_WH[[i]][[j]][1] - centroids.breeding.groundsSH_WH[i,1]
+	}
+	lon_sim_SH_WH_brsim[[i]] <- brsim
+}
+lon_sim_NH_EH_nbsim <- list()
+lon_sim_NH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_EH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_NH_EH[[i]][[j]][1] - centroids.nonbreeding.groundsNH_EH[i,1]
+	}
+	lon_sim_NH_EH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_NH_EH[[i]][[j]][1] - centroids.breeding.groundsNH_EH[i,1]
+	}
+	lon_sim_NH_EH_brsim[[i]] <- brsim
+}
+lon_sim_SH_EH_nbsim <- list()
+lon_sim_SH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_EH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_SH_EH[[i]][[j]][1] - centroids.nonbreeding.groundsSH_EH[i,1]
+	}
+	lon_sim_SH_EH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_SH_EH[[i]][[j]][1] - centroids.breeding.groundsSH_EH[i,1]
+	}
+	lon_sim_SH_EH_brsim[[i]] <- brsim
+}
+lon_sim_nbsim_WH <- c(lon_sim_NH_WH_nbsim, lon_sim_SH_WH_nbsim)
+lon_sim_nbsim_EH <- c(lon_sim_NH_EH_nbsim, lon_sim_SH_EH_nbsim)
+lon_sim_brsim_WH <- c(lon_sim_NH_WH_brsim, lon_sim_SH_WH_brsim)
+lon_sim_brsim_EH <- c(lon_sim_NH_EH_brsim, lon_sim_SH_EH_brsim)
+
+lon_nbsim_best_simu_sel_WH <- list()
+lon_brsim_best_simu_sel_WH <- list()
+for(i in 1:length(geo_best_simu_nbsim_WH)){
+	lon_nbsim_best_simu_sel_WH[[i]] <- lon_sim_nbsim_WH[[i]][geo_best_simu_nbsim_WH[[i]]]
+	lon_brsim_best_simu_sel_WH[[i]] <- lon_sim_brsim_WH[[i]][geo_best_simu_brsim_WH[[i]]]
+}
+lon_nbsim_best_simu_sel_EH <- list()
+lon_brsim_best_simu_sel_EH <- list()
+for(i in 1:length(geo_best_simu_nbsim_EH)){
+	lon_nbsim_best_simu_sel_EH[[i]] <- lon_sim_nbsim_EH[[i]][geo_best_simu_nbsim_EH[[i]]]
+	lon_brsim_best_simu_sel_EH[[i]] <- lon_sim_brsim_EH[[i]][geo_best_simu_brsim_EH[[i]]]
+}
+lon_nbsim_best_simu_mean_WH <- unlist(lapply(lon_nbsim_best_simu_sel_WH, mean))
+lon_brsim_best_simu_mean_WH <- unlist(lapply(lon_brsim_best_simu_sel_WH, mean))
+lon_nbsim_best_simu_mean_EH <- unlist(lapply(lon_nbsim_best_simu_sel_EH, mean))
+lon_brsim_best_simu_mean_EH <- unlist(lapply(lon_brsim_best_simu_sel_EH, mean))
+
+
+
+lat_sim_NH_WH_nbsim <- list()
+lat_sim_NH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_NH_WH[[i]][[j]][2] - centroids.nonbreeding.groundsNH_WH[i,2]
+	}
+	lat_sim_NH_WH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_NH_WH[[i]][[j]][2] - centroids.breeding.groundsNH_WH[i,2]
+	}
+	lat_sim_NH_WH_brsim[[i]] <- brsim
+}
+lat_sim_SH_WH_nbsim <- list()
+lat_sim_SH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_WH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_SH_WH[[i]][[j]][2] - centroids.nonbreeding.groundsSH_WH[i,2]
+	}
+	lat_sim_SH_WH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_SH_WH[[i]][[j]][2] - centroids.breeding.groundsSH_WH[i,2]
+	}
+	lat_sim_SH_WH_brsim[[i]] <- brsim
+}
+lat_sim_NH_EH_nbsim <- list()
+lat_sim_NH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_EH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_NH_EH[[i]][[j]][2] - centroids.nonbreeding.groundsNH_EH[i,2]
+	}
+	lat_sim_NH_EH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_NH_EH[[i]][[j]][2] - centroids.breeding.groundsNH_EH[i,2]
+	}
+	lat_sim_NH_EH_brsim[[i]] <- brsim
+}
+lat_sim_SH_EH_nbsim <- list()
+lat_sim_SH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_EH[,1])){	
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- centroids.simulatedNB_SH_EH[[i]][[j]][2] - centroids.nonbreeding.groundsSH_EH[i,2]
+	}
+	lat_sim_SH_EH_nbsim[[i]] <- nbsim
+	for(j in 1:100){
+		brsim[j] <- centroids.simulatedBR_SH_EH[[i]][[j]][2] - centroids.breeding.groundsSH_EH[i,2]
+	}
+	lat_sim_SH_EH_brsim[[i]] <- brsim
+}
+lat_sim_nbsim_WH <- c(lat_sim_NH_WH_nbsim, lat_sim_SH_WH_nbsim)
+lat_sim_nbsim_EH <- c(lat_sim_NH_EH_nbsim, lat_sim_SH_EH_nbsim)
+lat_sim_brsim_WH <- c(lat_sim_NH_WH_brsim, lat_sim_SH_WH_brsim)
+lat_sim_brsim_EH <- c(lat_sim_NH_EH_brsim, lat_sim_SH_EH_brsim)
+
+lat_nbsim_best_simu_sel_WH <- list()
+lat_brsim_best_simu_sel_WH <- list()
+for(i in 1:length(geo_best_simu_nbsim_WH)){
+	lat_nbsim_best_simu_sel_WH[[i]] <- lat_sim_nbsim_WH[[i]][geo_best_simu_nbsim_WH[[i]]]
+	lat_brsim_best_simu_sel_WH[[i]] <- lat_sim_brsim_WH[[i]][geo_best_simu_brsim_WH[[i]]]
+}
+lat_nbsim_best_simu_sel_EH <- list()
+lat_brsim_best_simu_sel_EH <- list()
+for(i in 1:length(geo_best_simu_nbsim_EH)){
+	lat_nbsim_best_simu_sel_EH[[i]] <- lat_sim_nbsim_EH[[i]][geo_best_simu_nbsim_EH[[i]]]
+	lat_brsim_best_simu_sel_EH[[i]] <- lat_sim_brsim_EH[[i]][geo_best_simu_brsim_EH[[i]]]
+}
+lat_nbsim_best_simu_mean_WH <- unlist(lapply(lat_nbsim_best_simu_sel_WH, mean))
+lat_brsim_best_simu_mean_WH <- unlist(lapply(lat_brsim_best_simu_sel_WH, mean))
+lat_nbsim_best_simu_mean_EH <- unlist(lapply(lat_nbsim_best_simu_sel_EH, mean))
+lat_brsim_best_simu_mean_EH <- unlist(lapply(lat_brsim_best_simu_sel_EH, mean))
+
+
+
+
+
+
+
+
+
+# Are better performing simulated migratory destinations mostly driven by simulated breeding range or simulated non-breeding range?
+
+plot(best_simu_brsim_number_WH, best_simu_nbsim_number_WH)
+points(1:100,1:100,type="l")
+plot(best_simu_brsim_number_EH, best_simu_nbsim_number_EH)
+points(1:100,1:100,type="l")
+
+# Comparing migration distance and bearing of better simulated migration distance with the observed ones
+
+plot(geo_best_simu_brsim_dist_diff_mean_WH, bearing_brsim_best_simu_diff_mean_WH, pch=20)
+plot(geo_best_simu_nbsim_dist_diff_mean_WH, bearing_nbsim_best_simu_diff_mean_WH, pch=20)
+plot(geo_best_simu_brsim_dist_diff_mean_EH, bearing_brsim_best_simu_diff_mean_EH, pch=20)
+plot(geo_best_simu_nbsim_dist_diff_mean_EH, bearing_nbsim_best_simu_diff_mean_EH, pch=20)
+
+
+# Plot migration arcs for some species
+
+centroids.breeding.grounds_WH <- rbind(centroids.breeding.groundsNH_WH, centroids.breeding.groundsSH_WH)
+centroids.nonbreeding.grounds_WH <- rbind(centroids.nonbreeding.groundsNH_WH, centroids.nonbreeding.groundsSH_WH)
+centroids.breeding.grounds_EH <- rbind(centroids.breeding.groundsNH_EH, centroids.breeding.groundsSH_EH)
+centroids.nonbreeding.grounds_EH <- rbind(centroids.nonbreeding.groundsNH_EH, centroids.nonbreeding.groundsSH_EH)
+
+centroids.simu_nbsim_WH <- c(centroids.simulatedNB_NH_WH, centroids.simulatedNB_SH_WH)
+centroids.simu_brsim_WH <- c(centroids.simulatedBR_NH_WH, centroids.simulatedBR_SH_WH)
+centroids.simu_nbsim_EH <- c(centroids.simulatedNB_NH_EH, centroids.simulatedNB_SH_EH)
+centroids.simu_brsim_EH <- c(centroids.simulatedBR_NH_EH, centroids.simulatedBR_SH_EH)
+
+centroids.simu_nbsim_sel_WH <- list()
+centroids.simu_brsim_sel_WH <- list()
+for(i in 1:length(geo_best_simu_nbsim_WH)){
+	centroids.simu_nbsim_sel_WH[[i]] <- centroids.simu_nbsim_WH[[i]][geo_best_simu_nbsim_WH[[i]]]
+	centroids.simu_brsim_sel_WH[[i]] <- centroids.simu_brsim_WH[[i]][geo_best_simu_brsim_WH[[i]]]
+}
+centroids.simu_nbsim_sel_EH <- list()
+centroids.simu_brsim_sel_EH <- list()
+for(i in 1:length(geo_best_simu_nbsim_EH)){
+	centroids.simu_nbsim_sel_EH[[i]] <- centroids.simu_nbsim_EH[[i]][geo_best_simu_nbsim_EH[[i]]]
+	centroids.simu_brsim_sel_EH[[i]] <- centroids.simu_brsim_EH[[i]][geo_best_simu_brsim_EH[[i]]]
+}
+
+
+
+
+#plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+
+k = k+1
+
+plot(centroids.breeding.grounds_EH[k,1], centroids.breeding.grounds_EH[k,2], pch=20, col="red", cex=0.3, xlim=c(-180,180), ylim=c(-90,90))
+for(i in 1:length(centroids.simu_brsim_sel_EH[[k]])){
+	inter <- gcIntermediate(centroids.simu_brsim_sel_EH[[k]][[i]], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+	lines(inter, lwd=1, col="green")
+	points(centroids.simu_brsim_sel_EH[[k]][[i]][1], centroids.simu_brsim_sel_EH[[k]][[i]][2], pch=20, col="red", cex=0.3)
+}
+for(i in 1:length(centroids.simu_nbsim_sel_EH[[k]])){
+	inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.simu_nbsim_sel_EH[[k]][[i]], n=50, addStartEnd=T)
+	lines(inter, lwd=1, col="yellow")
+	points(centroids.simu_nbsim_sel_EH[[k]][[i]][1], centroids.simu_nbsim_sel_EH[[k]][[i]][2], pch=20, col="blue", cex=0.3)
+}
+points(centroids.breeding.grounds_EH[k,1], centroids.breeding.grounds_EH[k,2], pch=20, col="red", cex=0.5)
+points(centroids.nonbreeding.grounds_EH[k,1], centroids.nonbreeding.grounds_EH[k,2], pch=20, col="blue", cex=0.5)
+inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+lines(inter, lwd=1, col="grey")
+
+lon_brsim_best_simu_mean_EH[k]
+geo_best_simu_brsim_dist_diff_mean_EH[k]
+lon_nbsim_best_simu_mean_EH[k]
+geo_best_simu_nbsim_dist_diff_mean_EH[k]
+
+
+
+lon_brsim_best_simu_mean_EH[which(lon_brsim_best_simu_mean_EH=="NaN")] <- 0
+lat_brsim_best_simu_mean_EH[which(lat_brsim_best_simu_mean_EH=="NaN")] <- 0
+lon_nbsim_best_simu_mean_EH[which(lon_nbsim_best_simu_mean_EH=="NaN")] <- 0
+lat_nbsim_best_simu_mean_EH[which(lat_nbsim_best_simu_mean_EH=="NaN")] <- 0
+lon_brsim_best_simu_mean_WH[which(lon_brsim_best_simu_mean_WH=="NaN")] <- 0
+lat_brsim_best_simu_mean_WH[which(lat_brsim_best_simu_mean_WH=="NaN")] <- 0
+lon_nbsim_best_simu_mean_WH[which(lon_nbsim_best_simu_mean_WH=="NaN")] <- 0
+lat_nbsim_best_simu_mean_WH[which(lat_nbsim_best_simu_mean_WH=="NaN")] <- 0
+
+
+distas_brsim_WH <- vector()
+for(i in 1:length(lon_brsim_best_simu_mean_WH)){
+	distas_brsim_WH[i] <- dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_WH[i], lat_brsim_best_simu_mean_WH[i])))
+}
+distas_nbsim_WH <- vector()
+for(i in 1:length(lon_nbsim_best_simu_mean_WH)){
+	distas_nbsim_WH[i] <- dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_WH[i], lat_nbsim_best_simu_mean_WH[i])))
+}
+distas_brsim_EH <- vector()
+for(i in 1:length(lon_brsim_best_simu_mean_EH)){
+	distas_brsim_EH[i] <- dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_EH[i], lat_brsim_best_simu_mean_EH[i])))
+}
+distas_nbsim_EH <- vector()
+for(i in 1:length(lon_nbsim_best_simu_mean_EH)){
+	distas_nbsim_EH[i] <- dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_EH[i], lat_nbsim_best_simu_mean_EH[i])))
+}
+
+par(mfrow=c(1,2), mar=c(3.5,3.5,3.5,0.1), mgp=c(1.5,0.5,0), bg="grey")
+
+plot(c(lon_brsim_best_simu_mean_WH, lon_brsim_best_simu_mean_EH), c(lat_brsim_best_simu_mean_WH, lat_brsim_best_simu_mean_EH), pch=20, col="yellow", cex=0.7, xlab="Longitude difference", ylab="Latitude difference", main="Simulated breeding grounds", xlim=c(-110,110), ylim=c(-80,80))
+points(c(lon_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 15)], lon_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 15)]), c(lat_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 15)], lat_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 15)]), pch=20, col="orange", cex=0.7)
+points(c(lon_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 30)], lon_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 30)]), c(lat_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 30)], lat_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 30)]), pch=20, col="red", cex=0.7)
+points(c(lon_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 45)], lon_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 45)]), c(lat_brsim_best_simu_mean_WH[which(distas_brsim_WH >= 45)], lat_brsim_best_simu_mean_EH[which(distas_brsim_EH >= 45)]), pch=20, col="brown4", cex=0.7)
+abline(h=0)
+abline(v=0)
+
+plot(c(lon_nbsim_best_simu_mean_WH, lon_nbsim_best_simu_mean_EH), c(lat_nbsim_best_simu_mean_WH, lat_nbsim_best_simu_mean_EH), pch=20, col="yellow", cex=0.7, xlab="Longitude difference", ylab="Latitude difference", main="Simulated non-breeding grounds", xlim=c(-110,110), ylim=c(-80,80))
+points(c(lon_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 15)], lon_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 15)]), c(lat_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 15)], lat_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 15)]), pch=20, col="orange", cex=0.7)
+points(c(lon_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 30)], lon_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 30)]), c(lat_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 30)], lat_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 30)]), pch=20, col="red", cex=0.7)
+points(c(lon_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 45)], lon_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 45)]), c(lat_nbsim_best_simu_mean_WH[which(distas_nbsim_WH >= 45)], lat_nbsim_best_simu_mean_EH[which(distas_nbsim_EH >= 45)]), pch=20, col="brown4", cex=0.7)
+abline(h=0)
+abline(v=0)
+
+
+
+## PLOT for simulated breeding ranges
+
+par(mfrow=c(2,2), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
+
+#plot(NULL, xlim=c(-180,180), ylim=c(-90,90))
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_EH[k], lat_brsim_best_simu_mean_EH[k])))
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_WH[k], lat_brsim_best_simu_mean_WH[k])))
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_EH[k], lat_brsim_best_simu_mean_EH[k])))
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_WH[k], lat_brsim_best_simu_mean_WH[k])))
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_EH[k], lat_brsim_best_simu_mean_EH[k])))
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] < 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_WH[k], lat_brsim_best_simu_mean_WH[k])))
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] < 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_EH[k], lat_brsim_best_simu_mean_EH[k])))
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_EH[k] > 0 & lat_brsim_best_simu_mean_EH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_brsim_best_simu_mean_WH[k], lat_brsim_best_simu_mean_WH[k])))
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="red")
+	}
+	if(lon_brsim_best_simu_mean_WH[k] > 0 & lat_brsim_best_simu_mean_WH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_brsim_number_WH[k]/30, col="brown4")
+	}
+}
+
+
+## PLOT for simulated non-breeding ranges
+
+par(mfrow=c(2,2), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
+
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_EH[k], lat_nbsim_best_simu_mean_EH[k])))
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_WH[k], lat_nbsim_best_simu_mean_WH[k])))
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_EH[k], lat_nbsim_best_simu_mean_EH[k])))
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_WH[k], lat_nbsim_best_simu_mean_WH[k])))
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] > 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_EH[k], lat_nbsim_best_simu_mean_EH[k])))
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] < 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_WH[k], lat_nbsim_best_simu_mean_WH[k])))
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] < 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="brown4")
+	}
+}
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+for(k in 1:length(centroids.breeding.grounds_EH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_EH[k], lat_nbsim_best_simu_mean_EH[k])))
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_EH[k] > 0 & lat_nbsim_best_simu_mean_EH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_EH[k]/30, col="brown4")
+	}
+}
+for(k in 1:length(centroids.breeding.grounds_WH[,1])){
+	dista = dist(rbind(c(0,0), c(lon_nbsim_best_simu_mean_WH[k], lat_nbsim_best_simu_mean_WH[k])))
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista < 15){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="yellow")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 15 & dista < 30){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="orange")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 30 & dista < 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="red")
+	}
+	if(lon_nbsim_best_simu_mean_WH[k] > 0 & lat_nbsim_best_simu_mean_WH[k] < 0 & dista >= 45){
+		inter <- gcIntermediate(centroids.breeding.grounds_WH[k,], centroids.nonbreeding.grounds_WH[k,], n=50, addStartEnd=T)
+		lines(inter, lwd= best_simu_nbsim_number_WH[k]/30, col="brown4")
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1093,5 +1821,167 @@ xlsTable <- cbind(species.names, longitudinal.hemisphere, geo.distances.obs, the
 colnames(xlsTable) <- c("species name", "Longitudinal hemisphere", "Geographical distance", "Thermal distance", "Habitat distance", "Resource scarcity", "Scaled rank geo distance", "Scaled rank thermal distance", "Scaled rank habitat distance", "Scaled rank resource scarcity", "Scaled rank geo distance + thermal distance", "Scaled rank geo distance + habitat distance", "Scaled rank geo distance + resource scarcity", "Scaled rank thermal distance + habitat distance", "Scaled rank thermal distance + resource scarcity", "Scaled rank habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance", "Scaled rank geo distance + thermal distance + resource scarcity", "Scaled rank geo distance + habitat distance + resource scarcity", "Scaled rank thermal distance + habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance + resource scarcity")
 xlsTable <- xlsTable[order(species.names),]
 write.csv(xlsTable, "Appendix1.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Migration bearing
+
+bearings_obs_NH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
+	bearings_obs_NH_WH[i] <- bearingRhumb(centroids.nonbreeding.groundsNH_WH[i,], centroids.breeding.groundsNH_WH[i,])
+}
+bearings_obs_NH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
+	bearings_obs_NH_EH[i] <- bearingRhumb(centroids.nonbreeding.groundsNH_EH[i,], centroids.breeding.groundsNH_EH[i,])
+}
+bearings_obs_SH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
+	bearings_obs_SH_WH[i] <- bearingRhumb(centroids.nonbreeding.groundsSH_WH[i,], centroids.breeding.groundsSH_WH[i,])
+}
+bearings_obs_SH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
+	bearings_obs_SH_EH[i] <- bearingRhumb(centroids.nonbreeding.groundsSH_EH[i,], centroids.breeding.groundsSH_EH[i,])
+}
+bearings_obs_WH <- c(bearings_obs_NH_WH, bearings_obs_SH_WH)
+bearings_obs_EH <- c(bearings_obs_NH_EH, bearings_obs_SH_EH)
+bearings_obs <- c(bearings_obs_NH_WH, bearings_obs_NH_EH, bearings_obs_SH_WH, bearings_obs_SH_EH)
+
+
+
+bearings_sim_NH_WH_nbsim <- list()
+bearings_sim_NH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- bearingRhumb(centroids.simulatedNB_NH_WH[[i]][[j]], centroids.breeding.groundsNH_WH[i,])
+		bearings_sim_NH_WH_nbsim[[i]] <- nbsim
+	}
+	for(j in 1:100){
+		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsNH_WH[i,], centroids.simulatedBR_NH_WH[[i]][[j]])
+		bearings_sim_NH_WH_brsim[[i]] <- brsim
+	}
+}
+bearings_sim_NH_EH_nbsim <- list()
+bearings_sim_NH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsNH_EH[,1])){
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- bearingRhumb(centroids.simulatedNB_NH_EH[[i]][[j]], centroids.breeding.groundsNH_EH[i,])
+		bearings_sim_NH_EH_nbsim[[i]] <- nbsim
+	}
+	for(j in 1:100){
+		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsNH_EH[i,], centroids.simulatedBR_NH_EH[[i]][[j]])
+		bearings_sim_NH_EH_brsim[[i]] <- brsim
+	}
+}
+bearings_sim_SH_WH_nbsim <- list()
+bearings_sim_SH_WH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_WH[,1])){
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- bearingRhumb(centroids.simulatedNB_SH_WH[[i]][[j]], centroids.breeding.groundsSH_WH[i,])
+		bearings_sim_SH_WH_nbsim[[i]] <- nbsim
+	}
+	for(j in 1:100){
+		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsSH_WH[i,], centroids.simulatedBR_SH_WH[[i]][[j]])
+		bearings_sim_SH_WH_brsim[[i]] <- brsim
+	}
+}
+bearings_sim_SH_EH_nbsim <- list()
+bearings_sim_SH_EH_brsim <- list()
+for(i in 1:length(centroids.breeding.groundsSH_EH[,1])){
+	nbsim <- vector()
+	brsim <- vector()
+	for(j in 1:100){
+		nbsim[j] <- bearingRhumb(centroids.simulatedNB_SH_EH[[i]][[j]], centroids.breeding.groundsSH_EH[i,])
+		bearings_sim_SH_EH_nbsim[[i]] <- nbsim
+	}
+	for(j in 1:100){
+		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsSH_EH[i,], centroids.simulatedBR_SH_EH[[i]][[j]])
+		bearings_sim_SH_EH_brsim[[i]] <- brsim
+	}
+}
+
+bearings_sim_nbsim_WH <- c(bearings_sim_NH_WH_nbsim, bearings_sim_SH_WH_nbsim)
+bearings_sim_nbsim_EH <- c(bearings_sim_NH_EH_nbsim, bearings_sim_SH_EH_nbsim)
+bearings_sim_brsim_WH <- c(bearings_sim_NH_WH_brsim, bearings_sim_SH_WH_brsim)
+bearings_sim_brsim_EH <- c(bearings_sim_NH_EH_brsim, bearings_sim_SH_EH_brsim)
+bearings_sim_nbsim <- c(bearings_sim_NH_WH_nbsim, bearings_sim_NH_EH_nbsim, bearings_sim_SH_WH_nbsim, bearings_sim_SH_EH_nbsim)
+bearings_sim_brsim <- c(bearings_sim_NH_WH_brsim, bearings_sim_NH_EH_brsim, bearings_sim_SH_WH_brsim, bearings_sim_SH_EH_brsim)
+
+
+bearing_nbsim_best_simu_diff <- list()
+bearing_brsim_best_simu_diff <- list()
+for(i in 1:length(bearings_obs)){
+	bearing_nbsim_best_simu_diff[[i]] <- bearings_sim_nbsim[[i]] - bearings_obs[i]
+	bearing_brsim_best_simu_diff[[i]] <- bearings_sim_brsim[[i]] - bearings_obs[i]
+}
+bearing_nbsim_best_simu_diff_WH <- list()
+bearing_brsim_best_simu_diff_WH <- list()
+for(i in 1:length(bearings_obs_WH)){
+	bearing_nbsim_best_simu_diff_WH[[i]] <- bearings_sim_nbsim_WH[[i]] - bearings_obs_WH[i]
+	bearing_brsim_best_simu_diff_WH[[i]] <- bearings_sim_brsim_WH[[i]] - bearings_obs_WH[i]
+}
+bearing_nbsim_best_simu_diff_EH <- list()
+bearing_brsim_best_simu_diff_EH <- list()
+for(i in 1:length(bearings_obs_EH)){
+	bearing_nbsim_best_simu_diff_EH[[i]] <- bearings_sim_nbsim_EH[[i]] - bearings_obs_EH[i]
+	bearing_brsim_best_simu_diff_EH[[i]] <- bearings_sim_brsim_EH[[i]] - bearings_obs_EH[i]
+}
+
+
+
+
+bearing_nbsim_best_simu_diff_sel <- list()
+bearing_brsim_best_simu_diff_sel <- list()
+for(i in 1:length(geo_best_simu_nbsim)){
+	bearing_nbsim_best_simu_diff_sel[[i]] <- bearing_nbsim_best_simu_diff[[i]][geo_best_simu_nbsim[[i]]]
+	bearing_brsim_best_simu_diff_sel[[i]] <- bearing_brsim_best_simu_diff[[i]][geo_best_simu_brsim[[i]]]
+}
+
+
+bearing_nbsim_best_simu_diff_mean <- unlist(lapply(bearing_nbsim_best_simu_diff_sel, mean))
+bearing_nbsim_best_simu_diff_mean <- ifelse(bearing_nbsim_best_simu_diff_mean > 180, bearing_nbsim_best_simu_diff_mean-360, bearing_nbsim_best_simu_diff_mean)
+bearing_nbsim_best_simu_diff_mean <- ifelse(bearing_nbsim_best_simu_diff_mean < (-180), bearing_nbsim_best_simu_diff_mean+360, bearing_nbsim_best_simu_diff_mean)
+
+bearing_brsim_best_simu_diff_mean <- unlist(lapply(bearing_brsim_best_simu_diff_sel, mean))
+bearing_brsim_best_simu_diff_mean <- ifelse(bearing_brsim_best_simu_diff_mean > 180, bearing_brsim_best_simu_diff_mean-360, bearing_brsim_best_simu_diff_mean)
+bearing_brsim_best_simu_diff_mean <- ifelse(bearing_brsim_best_simu_diff_mean < (-180), bearing_brsim_best_simu_diff_mean+360, bearing_brsim_best_simu_diff_mean)
+
+
+
+bearing_nbsim_best_simu_diff_mean_WH <- unlist(lapply(bearing_nbsim_best_simu_diff_WH, mean))
+bearing_nbsim_best_simu_diff_mean_WH <- ifelse(bearing_nbsim_best_simu_diff_mean_WH > 180, bearing_nbsim_best_simu_diff_mean_WH-360, bearing_nbsim_best_simu_diff_mean_WH)
+bearing_nbsim_best_simu_diff_mean_WH <- ifelse(bearing_nbsim_best_simu_diff_mean_WH < (-180), bearing_nbsim_best_simu_diff_mean_WH+360, bearing_nbsim_best_simu_diff_mean_WH)
+bearing_nbsim_best_simu_diff_mean_EH <- unlist(lapply(bearing_nbsim_best_simu_diff_EH, mean))
+bearing_nbsim_best_simu_diff_mean_EH <- ifelse(bearing_nbsim_best_simu_diff_mean_EH > 180, bearing_nbsim_best_simu_diff_mean_EH-360, bearing_nbsim_best_simu_diff_mean_EH)
+bearing_nbsim_best_simu_diff_mean_EH <- ifelse(bearing_nbsim_best_simu_diff_mean_EH < (-180), bearing_nbsim_best_simu_diff_mean_EH+360, bearing_nbsim_best_simu_diff_mean_EH)
+
+bearing_brsim_best_simu_diff_mean_WH <- unlist(lapply(bearing_brsim_best_simu_diff_WH, mean))
+bearing_brsim_best_simu_diff_mean_WH <- ifelse(bearing_brsim_best_simu_diff_mean_WH > 180, bearing_brsim_best_simu_diff_mean_WH-360, bearing_brsim_best_simu_diff_mean_WH)
+bearing_brsim_best_simu_diff_mean_WH <- ifelse(bearing_brsim_best_simu_diff_mean_WH < (-180), bearing_brsim_best_simu_diff_mean_WH+360, bearing_brsim_best_simu_diff_mean_WH)
+bearing_brsim_best_simu_diff_mean_EH <- unlist(lapply(bearing_brsim_best_simu_diff_EH, mean))
+bearing_brsim_best_simu_diff_mean_EH <- ifelse(bearing_brsim_best_simu_diff_mean_EH > 180, bearing_brsim_best_simu_diff_mean_EH-360, bearing_brsim_best_simu_diff_mean_EH)
+bearing_brsim_best_simu_diff_mean_EH <- ifelse(bearing_brsim_best_simu_diff_mean_EH < (-180), bearing_brsim_best_simu_diff_mean_EH+360, bearing_brsim_best_simu_diff_mean_EH)
 
 
