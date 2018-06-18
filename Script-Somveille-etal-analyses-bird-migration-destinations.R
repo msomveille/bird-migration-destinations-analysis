@@ -1,3 +1,10 @@
+
+#### Script to run the analyses of migration destinations presented in Somveille et al. (2018) Where the wild birds go: explaining the differences in migration destinations across terrestrial bird species. Ecography
+
+
+## Load required libraries
+
+library(rgdal)
 library(geosphere)
 library(fields)
 library(MASS)
@@ -5,9 +12,10 @@ library(raster)
 library(move)
 library(vioplot)
 library(igraph)
+library(emdist)
+
 
 setwd("~/Data")
-
 
 
 ################################################################
@@ -20,51 +28,62 @@ setwd("~/Data")
 
 
 
-#Presence-absence data for migratory bird species
-PresAbs_BR_NH <- read.table("PresAbs_BR_NH.txt", header=T)  # Breeding range of species breeding during the northern summer
-PresAbs_NB_NH <- read.table("PresAbs_NB_NH.txt", header=T)  # Non-breeding range of species breeding during the northern summer
-PresAbs_BR_SH <- read.table("PresAbs_BR_SH.txt", header=T)  # Breeding range of species breeding during the northern winter
-PresAbs_NB_SH <- read.table("PresAbs_NB_SH.txt", header=T)  # Non-breeding range of species breeding during the northern winter
-PresAbs_residents <- read.table("PresAbs_res.txt", header=T)  # Non-breeding range of species breeding during the northern winter
+## Load presence-absence data for migratory bird species
 
-#Remove species that do not have at least 50% of either their breeding or non-breeding range on land
+PresAbs_BR_NH <- read.table("PresAbs_BR_NH.txt", header=T)  # Breeding range of species that breed during the northern summer
+PresAbs_NB_NH <- read.table("PresAbs_NB_NH.txt", header=T)  # Non-breeding range of species that breed during the northern summer
+PresAbs_BR_SH <- read.table("PresAbs_BR_SH.txt", header=T)  # Breeding range of species that breed during the northern winter
+PresAbs_NB_SH <- read.table("PresAbs_NB_SH.txt", header=T)  # Non-breeding range of species that breed during the northern winter
+
+
+## Remove species that do not have at least 50% of either their breeding or non-breeding range on land
+
 sppinfo <- read.csv("List_species_both&coastal.csv", sep=";", header=T)
 PresAbs_BR_NH <- PresAbs_BR_NH[,-match(c(as.character(sppinfo$CoastalBothBoth),as.character(sppinfo$CoastalNHEH),as.character(sppinfo$CoastalNHWH),as.character(sppinfo$CoastalBothEH)), colnames(PresAbs_BR_NH), nomatch=0)]
 PresAbs_NB_NH <- PresAbs_NB_NH[,-match(c(as.character(sppinfo$CoastalBothBoth),as.character(sppinfo$CoastalNHEH),as.character(sppinfo$CoastalNHWH),as.character(sppinfo$CoastalBothEH)), colnames(PresAbs_NB_NH), nomatch=0)]
 PresAbs_BR_SH <- PresAbs_BR_SH[,-match(c(as.character(sppinfo$CoastalSHEH),as.character(sppinfo$CoastalSHWH)), colnames(PresAbs_BR_SH), nomatch=0)]
 PresAbs_NB_SH <- PresAbs_NB_SH[,-match(c(as.character(sppinfo$CoastalSHEH),as.character(sppinfo$CoastalSHWH)), colnames(PresAbs_NB_SH), nomatch=0)]
 
-#Load shapefile of the global hexagon grid
-hexgrid <- readOGR("Hex_grid", "isea3h7_analyses_clean", verbose=FALSE)
-hexgrid <- hexgrid[,c(1,2,15,16)]
+
+## Load the global hexagon grid
+
+hexgrid <- readOGR("Hex_grid", "isea3h7_hexgrid", verbose=FALSE)
 hexgridWH <- hexgrid[which(hexgrid@data[,4] <= -30),]
 hexgridEH <- hexgrid[which(hexgrid@data[,4] > -30),]
 
 
-#Environmental data
-envData <- read.csv("Env_data.csv")
-envData2 <- envData[-which((envData$Tmean_NW=="#DIV/0!" | envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
-#PrecNS <- log(envData2$Prec_NS+1)
-#PrecNW <- log(envData2$Prec_NW+1)
-TempMeanNS <- as.numeric(as.vector(envData2$Tmean_NS))
-TempMeanNW <- as.numeric(as.vector(envData2$Tmean_NW))
-TempMinNS <- envData2$Tmin_NS
-TempMinNW <- envData2$Tmin_NW
-TempRangeNS <- envData2$Trange_NS
-TempRangeNW <- envData2$Trange_NW
-NDVI_NS <- ((envData2$NDVI_may + envData2$NDVI_jun + envData2$NDVI_jul + envData2$NDVI_aug)/4) * 100
-NDVI_NW <- ((envData2$NDVI_nov + envData2$NDVI_dec + envData2$NDVI_jan + envData2$NDVI_feb)/4) * 100
-NDVI_NS[NDVI_NS<1] <- 1
-NDVI_NW[NDVI_NW<1] <- 1
-habitat <- envData2$habitatCoverage
+## Load environmental data
 
-#Hexagons ID
+envData <- read.csv("Env_data.csv")
+envData2 <- envData[-which((envData$Tmean_NW=="#DIV/0!" | envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]  # Remove hexagons without environmental data 
+TempMeanNS <- as.numeric(as.vector(envData2$Tmean_NS))		# Mean temperature during the northern summer
+TempMeanNW <- as.numeric(as.vector(envData2$Tmean_NW))		# Mean temperature during the northern winter
+TempMinNS <- envData2$Tmin_NS								# Minimum temperature during the northern summer
+TempMinNW <- envData2$Tmin_NW								# Minimum temperature during the northern winter
+habitat <- envData2$habitatCoverage							# Habitat coverage
+NDVI_NS <- ((envData2$NDVI_may + envData2$NDVI_jun + envData2$NDVI_jul + envData2$NDVI_aug)/4) * 100		# NDVI during the northern summer
+NDVI_NS[NDVI_NS<1] <- 1
+NDVI_NW <- ((envData2$NDVI_nov + envData2$NDVI_dec + envData2$NDVI_jan + envData2$NDVI_feb)/4) * 100		# NDVI during the northern winter
+NDVI_NW[NDVI_NW<1] <- 1
+
+
+## Get hexagons ID and update hexagon grid object
+
 hexidWH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_BR_NH[,1]),1]
 hexidEH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),1]
 hexgrid2 <- rbind(hexgridWH[match(hexidWH, hexgridWH@data[,1]),], hexgridEH[match(hexidEH, hexgridEH@data[,1]),])
 
 
-#z-tranform climate data to make axes comparable
+## Geographic coordinates of hexagons
+
+lonlat <- cbind(envData2$LONGITUDE, envData2$LATITUDE)
+colnames(lonlat) <- c("LONGITUDE", "LATITUDE")
+west_Hem <- lonlat[which(lonlat[,1]<=-30),]  # subset for Western Hemisphere
+east_Hem <- lonlat[which(lonlat[,1]>-30),]   # subset for Eastern Hemisphere
+
+
+## z-tranformation of climate data
+
 sdTempMean <- sd(c(TempMeanNS,TempMeanNW))
 mnTempMean <- mean(c(TempMeanNS,TempMeanNW))
 sdTempMin <- sd(c(TempMinNS,TempMinNW))
@@ -75,17 +94,14 @@ TempMinNS <- (TempMinNS - mnTempMin) / sdTempMin
 TempMinNW <- (TempMinNW - mnTempMin) / sdTempMin
 
 
-#Split environmental data into western hemisphere (WH) and eastern hemisphere (EH)
+## Split environmental data into western hemisphere (WH) and eastern hemisphere (EH)
+
 TempMeanNS_WH <- TempMeanNS[which(envData2$LONGITUDE<=-30)]
 TempMeanNW_WH <- TempMeanNW[which(envData2$LONGITUDE<=-30)]
 TempMinNS_WH <- TempMinNS[which(envData2$LONGITUDE<=-30)]
 TempMinNW_WH <- TempMinNW[which(envData2$LONGITUDE<=-30)]
 NDVI_NS_WH <- NDVI_NS[which(envData2$LONGITUDE<=-30)]
 NDVI_NW_WH <- NDVI_NW[which(envData2$LONGITUDE<=-30)]
-resourceGain_NS_WH <- NDVI_NS_WH - NDVI_NW_WH
-resourceGain_NW_WH <- NDVI_NW_WH - NDVI_NS_WH
-resourceScarcity_NS_WH <- -resourceGain_NS_WH
-resourceScarcity_NW_WH <- -resourceGain_NW_WH
 habitat_WH <- habitat[which(envData2$LONGITUDE<=-30)]
 TempMeanNS_EH <- TempMeanNS[which(envData2$LONGITUDE>-30)]
 TempMeanNW_EH <- TempMeanNW[which(envData2$LONGITUDE>-30)]
@@ -93,91 +109,103 @@ TempMinNS_EH <- TempMinNS[which(envData2$LONGITUDE>-30)]
 TempMinNW_EH <- TempMinNW[which(envData2$LONGITUDE>-30)]
 NDVI_NS_EH <- NDVI_NS[which(envData2$LONGITUDE>-30)]
 NDVI_NW_EH <- NDVI_NW[which(envData2$LONGITUDE>-30)]
+habitat_EH <- habitat[which(envData2$LONGITUDE>-30)]
+
+
+## Resource gain and resource scarcity
+
+resourceGain_NS_WH <- NDVI_NS_WH - NDVI_NW_WH
+resourceGain_NW_WH <- NDVI_NW_WH - NDVI_NS_WH
+resourceScarcity_NS_WH <- -resourceGain_NS_WH
+resourceScarcity_NW_WH <- -resourceGain_NW_WH
 resourceGain_NS_EH <- NDVI_NS_EH - NDVI_NW_EH
 resourceGain_NW_EH <- NDVI_NW_EH - NDVI_NS_EH
 resourceScarcity_NS_EH <- -resourceGain_NS_EH
 resourceScarcity_NW_EH <- -resourceGain_NW_EH
-habitat_EH <- habitat[which(envData2$LONGITUDE>-30)]
 
 
-#Geographic coordinates
-lonlat <- cbind(envData2$LONGITUDE, envData2$LATITUDE)
-colnames(lonlat) <- c("LONGITUDE", "LATITUDE")
-west_Hem <- lonlat[which(lonlat[,1]<=-30),]  # subset for Western Hemisphere
-east_Hem <- lonlat[which(lonlat[,1]>-30),]   # subset for Eastern Hemisphere
+## Remove presence-absence for hexagons without environmental data 
 
-
-
-#Clean presence-absence data
 PresAbs_BR_NH <- PresAbs_BR_NH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
 PresAbs_NB_NH <- PresAbs_NB_NH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
 PresAbs_BR_SH <- PresAbs_BR_SH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
 PresAbs_NB_SH <- PresAbs_NB_SH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
-PresAbs_residents <- PresAbs_residents[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
 
-PresAbs_BR_NH_EH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),]
-PresAbs_NB_NH_EH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_NH[,1]),]
+# Western Hemisphere
 PresAbs_BR_NH_WH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_BR_NH[,1]),]
 PresAbs_NB_NH_WH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_NB_NH[,1]),]
-
-PresAbs_BR_SH_EH <- PresAbs_BR_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_SH[,1]),]
-PresAbs_NB_SH_EH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_SH[,1]),]
 PresAbs_BR_SH_WH <- PresAbs_BR_SH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_BR_SH[,1]),]
 PresAbs_NB_SH_WH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_NB_SH[,1]),]
 
+# Eastern Hemisphere
+PresAbs_BR_NH_EH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),]
+PresAbs_NB_NH_EH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_NH[,1]),]
+PresAbs_BR_SH_EH <- PresAbs_BR_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_SH[,1]),]
+PresAbs_NB_SH_EH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_SH[,1]),]
 
 
-#Computing range size
-rangeSize_migra_BR_NH_WH <- apply(PresAbs_BR_NH_WH[,-1], 2, sum)
-rangeSize_migra_BR_SH_WH <- apply(PresAbs_BR_SH_WH[,-1], 2, sum)
-rangeSize_migra_NB_NH_WH <- apply(PresAbs_NB_NH_WH[,-1], 2, sum)
-rangeSize_migra_NB_SH_WH <- apply(PresAbs_NB_SH_WH[,-1], 2, sum)
-rangeSize_migra_BR_NH_EH <- apply(PresAbs_BR_NH_EH[,-1], 2, sum)
-rangeSize_migra_BR_SH_EH <- apply(PresAbs_BR_SH_EH[,-1], 2, sum)
-rangeSize_migra_NB_NH_EH <- apply(PresAbs_NB_NH_EH[,-1], 2, sum)
-rangeSize_migra_NB_SH_EH <- apply(PresAbs_NB_SH_EH[,-1], 2, sum)
-rangeSizes_WH <- c(rangeSize_migra_BR_NH_WH, rangeSize_migra_BR_SH_WH, rangeSize_migra_NB_NH_WH, rangeSize_migra_NB_SH_WH)
-rangeSizes_EH <- c(rangeSize_migra_BR_NH_EH, rangeSize_migra_BR_SH_EH, rangeSize_migra_NB_NH_EH, rangeSize_migra_NB_SH_EH)
+
+## Compute seasonal range size (i.e. number of hexagons in which the species is present at a given season)
+
+rangeSize_BR_NH_WH <- apply(PresAbs_BR_NH_WH[,-1], 2, sum)
+rangeSize_BR_SH_WH <- apply(PresAbs_BR_SH_WH[,-1], 2, sum)
+rangeSize_NB_NH_WH <- apply(PresAbs_NB_NH_WH[,-1], 2, sum)
+rangeSize_NB_SH_WH <- apply(PresAbs_NB_SH_WH[,-1], 2, sum)
+rangeSize_BR_NH_EH <- apply(PresAbs_BR_NH_EH[,-1], 2, sum)
+rangeSize_BR_SH_EH <- apply(PresAbs_BR_SH_EH[,-1], 2, sum)
+rangeSize_NB_NH_EH <- apply(PresAbs_NB_NH_EH[,-1], 2, sum)
+rangeSize_NB_SH_EH <- apply(PresAbs_NB_SH_EH[,-1], 2, sum)
+rangeSizes_WH <- c(rangeSize_BR_NH_WH, rangeSize_BR_SH_WH, rangeSize_NB_NH_WH, rangeSize_NB_SH_WH)
+rangeSizes_EH <- c(rangeSize_BR_NH_EH, rangeSize_BR_SH_EH, rangeSize_NB_NH_EH, rangeSize_NB_SH_EH)
 
 
-#Computing range overlap
+## Compute range overlap (i.e. number of hexagons in which the species is present during both breeding and non-breeding seasons divided by the number of hexagons in which the species is present during at least breeding or non-breeding)
+
+# Western Hemisphere
 perm_NH_WH <- PresAbs_BR_NH_WH * PresAbs_NB_NH_WH
 perm_NH_WH <- apply(perm_NH_WH[,-1], 2, sum)
-rangeOverlap_NH_WH <- perm_NH_WH / (rangeSize_migra_BR_NH_WH + rangeSize_migra_NB_NH_WH - perm_NH_WH)
+rangeOverlap_NH_WH <- perm_NH_WH / (rangeSize_BR_NH_WH + rangeSize_NB_NH_WH - perm_NH_WH)
 rangeOverlap_NH_WH  <- rangeOverlap_NH_WH[-which(rangeOverlap_NH_WH == "NaN")]
 perm_SH_WH <- PresAbs_BR_SH_WH * PresAbs_NB_SH_WH
 perm_SH_WH <- apply(perm_SH_WH[,-1], 2, sum)
-rangeOverlap_SH_WH <- perm_SH_WH / (rangeSize_migra_BR_SH_WH + rangeSize_migra_NB_SH_WH - perm_SH_WH)
+rangeOverlap_SH_WH <- perm_SH_WH / (rangeSize_BR_SH_WH + rangeSize_NB_SH_WH - perm_SH_WH)
 rangeOverlap_SH_WH  <- rangeOverlap_SH_WH[-which(rangeOverlap_SH_WH == "NaN")]
 
+# Eastern Hemisphere
 perm_NH_EH <- PresAbs_BR_NH_EH * PresAbs_NB_NH_EH
 perm_NH_EH <- apply(perm_NH_EH[,-1], 2, sum)
-rangeOverlap_NH_EH <- perm_NH_EH / (rangeSize_migra_BR_NH_EH + rangeSize_migra_NB_NH_EH - perm_NH_EH)
+rangeOverlap_NH_EH <- perm_NH_EH / (rangeSize_BR_NH_EH + rangeSize_NB_NH_EH - perm_NH_EH)
 rangeOverlap_NH_EH  <- rangeOverlap_NH_EH[-which(rangeOverlap_NH_EH == "NaN")]
 perm_SH_EH <- PresAbs_BR_SH_EH * PresAbs_NB_SH_EH
 perm_SH_EH <- apply(perm_SH_EH[,-1], 2, sum)
-rangeOverlap_SH_EH <- perm_SH_EH / (rangeSize_migra_BR_SH_EH + rangeSize_migra_NB_SH_EH - perm_SH_EH)
+rangeOverlap_SH_EH <- perm_SH_EH / (rangeSize_BR_SH_EH + rangeSize_NB_SH_EH - perm_SH_EH)
 rangeOverlap_SH_EH  <- rangeOverlap_SH_EH[-which(rangeOverlap_SH_EH == "NaN")]
 
 
-#Select migratory species with less than 20% overlap between their breeding and non-breeding ranges
+## Migratory species with less than 20% overlap between their breeding and non-breeding ranges
+
 selectedSpeciesNH_EH <- which(rangeOverlap_NH_EH < 0.2)
 selectedSpeciesSH_EH <- which(rangeOverlap_SH_EH < 0.2)
 selectedSpeciesNH_WH <- which(rangeOverlap_NH_WH < 0.2)
 selectedSpeciesSH_WH <- which(rangeOverlap_SH_WH < 0.2)
 
-#correct mistakes in coding seasons
+
+## Correct some mistakes in coding seasons
+
 #Anthus hoeschi
 selectedSpeciesSH_EH <-  c(selectedSpeciesSH_EH, selectedSpeciesNH_EH[30])
 selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-30]
+
 #Gallinago.nigripennis
 selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-162]
+
 #Pitta.moluccensis and Sylvia.cantillans 
 selectedSpeciesNH_EH <-  c(selectedSpeciesNH_EH, selectedSpeciesSH_EH[c(13,14)])
 selectedSpeciesSH_EH <- selectedSpeciesSH_EH[-c(13,14)]
 
 
-#Keep the presence-absence data only of selected species 
+## Keep the presence-absence data only of selected species
+
 PresAbs_BR_NH_WH2 <- PresAbs_BR_NH_WH[,match(names(selectedSpeciesNH_WH), colnames(PresAbs_BR_NH_WH))]
 PresAbs_NB_NH_WH2 <- PresAbs_NB_NH_WH[,match(names(selectedSpeciesNH_WH), colnames(PresAbs_NB_NH_WH))]
 PresAbs_BR_NH_EH2 <- PresAbs_BR_NH_EH[,match(names(selectedSpeciesNH_EH)[1:386], colnames(PresAbs_BR_NH_EH))]
@@ -191,7 +219,9 @@ PresAbs_NB_SH_EH2 <- PresAbs_NB_SH_EH[,match(names(selectedSpeciesSH_EH)[1:12], 
 PresAbs_BR_SH_EH2 <- cbind(PresAbs_BR_SH_EH2, PresAbs_BR_NH_EH[,match(names(selectedSpeciesSH_EH)[13], colnames(PresAbs_BR_NH_EH))])
 PresAbs_NB_SH_EH2 <- cbind(PresAbs_NB_SH_EH2, PresAbs_NB_NH_EH[,match(names(selectedSpeciesSH_EH)[13], colnames(PresAbs_NB_NH_EH))])
 
-#Remove species with 0 presences (or only 1 because it creates problems for the kernel estimation) for at least one season
+
+## Remove species with 0 presences (or only 1 because it creates problems for the kernel estimation) during at least one season
+
 toremove_NH_WH <- which(apply(PresAbs_BR_NH_WH2, 2, sum)<=1 | apply(PresAbs_NB_NH_WH2, 2, sum)<=1)
 if(length(toremove_NH_WH) > 0){
 	PresAbs_BR_NH_WH2 <- PresAbs_BR_NH_WH2[,-toremove_NH_WH]
@@ -216,22 +246,6 @@ if(length(toremove_SH_EH) > 0){
 
 
 
-#Species migrating in both longitudinal hemispheres
-#selectedSpeciesNH_both <- names(PresAbs_BR_NH_EH2)[which(is.element(names(PresAbs_BR_NH_EH2), names(PresAbs_BR_NH_WH2)))]
-#aa = apply(PresAbs_BR_NH_WH2[,match(selectedSpeciesNH_both, names(PresAbs_BR_NH_WH2))], 2, sum)
-#bb = apply(PresAbs_NB_NH_WH2[,match(selectedSpeciesNH_both, names(PresAbs_NB_NH_WH2))], 2, sum)
-#cc = apply(PresAbs_BR_NH_EH2[,match(selectedSpeciesNH_both, names(PresAbs_BR_NH_EH2))], 2, sum)
-#dd = apply(PresAbs_NB_NH_EH2[,match(selectedSpeciesNH_both, names(PresAbs_NB_NH_EH2))], 2, sum)
-#which(aa>0 & bb>0 & cc>0 & dd>0)
-#names(selectedSpeciesNH_both)
-
-
-#Relationship between richness resident species and NDVI
-richness.residents <- apply(PresAbs_residents[,-1], 1, sum)
-minNDVI <- pmin(NDVI_NS, NDVI_NW)
-summary(lm(richness.residents ~ minNDVI-1))
-
-
 
 ################################################################
 ################################################################
@@ -241,7 +255,13 @@ summary(lm(richness.residents ~ minNDVI-1))
 ################################################################
 ################################################################
 
-#Convert the temperatures (mean and range) values recorded for presences into a density raster
+
+
+###  Thermal distance between breeding and non-breeding grounds  ###
+
+
+## Convert temperature values (mean and min) associated with presences into a density raster
+
 nicheDensityRaster <- function(seasonalNiche){
 	niche.kernel <- kde2d(seasonalNiche[,1], seasonalNiche[,2], n=20, h=1, lims=c(-3.4,1.6, -3.3,1.4)) 
 	niche.kernel$z = niche.kernel$z/sum(niche.kernel$z)
@@ -256,7 +276,6 @@ nicheDensityRaster <- function(seasonalNiche){
 	return(niche.raster)
 }
 
-#Compute niche distances (using the earth mover's distance) for every migratory species
 breeding.thermal.nichesNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_WH[which(x==1)], TempMinNS_WH[which(x==1)])))
 nonbreeding.thermal.nichesNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_WH[which(x==1)], TempMinNW_WH[which(x==1)])))
 breeding.thermal.nichesSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_WH[which(x==1)], TempMinNW_WH[which(x==1)])))
@@ -266,6 +285,9 @@ nonbreeding.thermal.nichesNH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) niche
 breeding.thermal.nichesSH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_EH[which(x==1)], TempMinNW_EH[which(x==1)])))
 nonbreeding.thermal.nichesSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_EH[which(x==1)], TempMinNS_EH[which(x==1)])))
 
+
+## Compute thermal distance (using the earth mover's distance) for every migratory species
+
 thermal.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)
 thermal.distancesSH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)
 thermal.distancesNH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)
@@ -273,25 +295,9 @@ thermal.distancesSH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.n
 thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
 
 
-#Thermal distance for every migratory species
-#breeding.thermal.optimumNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(TempNS_WH[which(x==1)]))
-#nonbreeding.thermal.optimumNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(TempNW_WH[which(x==1)]))
-#breeding.thermal.optimumSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) mean(TempNW_WH[which(x==1)]))
-#nonbreeding.thermal.optimumSH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) mean(TempNS_WH[which(x==1)]))
-#breeding.thermal.optimumNH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) mean(TempNS_EH[which(x==1)]))
-#nonbreeding.thermal.optimumNH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) mean(TempNW_EH[which(x==1)]))
-#breeding.thermal.optimumSH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) mean(TempNW_EH[which(x==1)]))
-#nonbreeding.thermal.optimumSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) mean(TempNS_EH[which(x==1)]))
 
-#thermal.distancesNH_WH <- abs(breeding.thermal.optimumNH_WH - nonbreeding.thermal.optimumNH_WH)
-#thermal.distancesSH_WH <- abs(breeding.thermal.optimumSH_WH - nonbreeding.thermal.optimumSH_WH)
-#thermal.distancesNH_EH <- abs(breeding.thermal.optimumNH_EH - nonbreeding.thermal.optimumNH_EH)
-#thermal.distancesSH_EH <- abs(breeding.thermal.optimumSH_EH - nonbreeding.thermal.optimumSH_EH)
-#thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
+###  Habitat distance between breeding and non-breeding grounds  ###
 
-
-
-#Habitat distance for every migratory species
 breeding.habitatNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(habitat[which(x==1)]))
 nonbreeding.habitatNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(habitat[which(x==1)]))
 breeding.habitatSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) mean(habitat[which(x==1)]))
@@ -443,6 +449,8 @@ legend("topright", inset=.005, bg="white", box.col="white", title="Habitat dista
 
 
 
+
+
 ################################################################
 ################################################################
 
@@ -450,6 +458,7 @@ legend("topright", inset=.005, bg="white", box.col="white", title="Habitat dista
 
 ################################################################
 ################################################################
+
 
 
 #Great circle distance between each pair of hexagons
