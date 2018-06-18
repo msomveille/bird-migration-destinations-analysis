@@ -288,10 +288,10 @@ nonbreeding.thermal.nichesSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) niche
 
 ## Compute thermal distance (using the earth mover's distance) for every migratory species
 
-thermal.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)
-thermal.distancesSH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)
-thermal.distancesNH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)
-thermal.distancesSH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_EH, Y=nonbreeding.thermal.nichesSH_EH)
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)
+thermal.distancesSH_WH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)
+thermal.distancesNH_EH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)
+thermal.distancesSH_EH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesSH_EH, Y=nonbreeding.thermal.nichesSH_EH)
 thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
 
 
@@ -315,7 +315,8 @@ habitat.distances.obs = c(habitat.distancesNH_WH, habitat.distancesNH_EH, habita
 
 
 
-#Computing geographical (migration) distance for every migratory species
+###  Geographical distance between breeding and non-breeding grounds  ###
+
 centroids.breeding.groundsNH_WH <- t(apply(PresAbs_BR_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))
 centroids.nonbreeding.groundsNH_WH <- t(apply(PresAbs_NB_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))
 centroids.breeding.groundsSH_WH <- t(apply(PresAbs_BR_SH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))
@@ -332,7 +333,9 @@ geo.distancesSH_EH <- rdist.earth.vec(centroids.breeding.groundsSH_EH, centroids
 geo.distances.obs <- c(geo.distancesNH_WH, geo.distancesNH_EH, geo.distancesSH_WH, geo.distancesSH_EH)
 
 
-#Computing resource scarcity for every migratory species
+
+###  Resource scarcity  ###
+
 breeding.resource.scarcityNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))
 nonbreeding.resource.scarcityNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))
 resource.scarcityNH_WH <- breeding.resource.scarcityNH_WH + nonbreeding.resource.scarcityNH_WH
@@ -349,7 +352,8 @@ resource.scarcity.obs <- c(resource.scarcityNH_WH, resource.scarcityNH_EH, resou
 
 
 
-### Figure 1 - trade-off ### 
+####  Figure 1: Relationships between the geographical distance separating the breeding and non-breeding ranges, the year-round availability of surplis primary productivity and temperature difference between the breeding and non-breeding seasons (thermal distance) across migratory species  #### 
+
 par(mfrow=c(1,1), mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))
 hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")
 axis(side=4)
@@ -365,9 +369,10 @@ legend("topright", inset=.005, bg="white", box.col="white", title="Thermal dista
 
 
 
-### Figure S3 - trade-offs ### 
+####  Fig A3: Relationships between the four cost-benefit factors predicted to affect bird migration  ### 
 
 par(mfrow=c(4,2), mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))
+
 # Relationship between geographical distance and thermal distance
 plot(sqrt(geo.distances.obs), thermal.distances.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -376,6 +381,7 @@ mod = lm(thermal.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")
 mtext("A", cex=1.3, side=3, line=0, at=-20)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=20)
+
 # Relationship between resource scarcity and thermal distance
 plot(resource.scarcity.obs, thermal.distances.obs, xlab="Resource scarcity", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -384,6 +390,7 @@ mod = lm(thermal.distances.obs ~ resource.scarcity.obs + I(resource.scarcity.obs
 lines(sort(resource.scarcity.obs), fitted(mod)[order(resource.scarcity.obs)], type="l", col="red")
 mtext("B", cex=1.3, side=3, line=0, at=-80)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=5)
+
 # Relationship between geographical distance and habitat distance
 plot(sqrt(geo.distances.obs), habitat.distances.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Habitat distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -392,6 +399,7 @@ mod = lm(habitat.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")
 mtext("C", cex=1.3, side=3, line=0, at=-20)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=20)
+
 # Relationship between resource scarcity and habitat distance
 plot(resource.scarcity.obs, habitat.distances.obs, xlab="Resource scarcity", ylab="Habitat distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -400,6 +408,7 @@ mod = lm(habitat.distances.obs ~ resource.scarcity.obs + I(resource.scarcity.obs
 lines(sort(resource.scarcity.obs), fitted(mod)[order(resource.scarcity.obs)], type="l", col="red")
 mtext("D", cex=1.3, side=3, line=0, at=-80)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=-45)
+
 # Relationship between geographical distance and resource scarcity
 plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -408,6 +417,7 @@ mod = lm(resource.scarcity.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")
 mtext("E", cex=1.3, side=3, line=0, at=-20)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=1, line=-1.5, at=20)
+
 # Relationship between habitat distance and thermal distance
 plot(habitat.distances.obs, thermal.distances.obs, xlab="Habitat distance", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)
 axis(side=2)
@@ -417,7 +427,7 @@ lines(sort(habitat.distances.obs), fitted(mod)[order(habitat.distances.obs)], ty
 mtext("F", cex=1.3, side=3, line=0, at=-0.1)
 mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.5, at=0.45)
 
-# Relationship between three factors (thermal dist)
+# Relationship between three factors (geographical distance, resource scarcity and thermal distance)
 hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")
 axis(side=4)
 axis(side=1)
@@ -431,7 +441,7 @@ mtext("G", cex=1.3, side=3, line=0, at=-20)
 mtext("Number of species", side=4, line=1.4, cex=0.7,las=0)
 legend("topright", inset=.005, bg="white", box.col="white", title="Thermal distance", c(paste("<", round(quantile(thermal.distances.obs)[2], 2), sep=" "), paste(round(quantile(thermal.distances.obs)[2], 2), round(quantile(thermal.distances.obs)[3], 2), sep="–"), paste(round(quantile(thermal.distances.obs)[3], 2), round(quantile(thermal.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(thermal.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.7)
 
-# Relationship between three factors (habitat dist)
+# Relationship between three factors (geographical distance, resource scarcity and habitat distance)
 hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")
 axis(side=4)
 axis(side=1)
@@ -461,20 +471,33 @@ legend("topright", inset=.005, bg="white", box.col="white", title="Habitat dista
 
 
 
-#Great circle distance between each pair of hexagons
+## Compute the great circle distance between each pair of hexagons on the grid
+
+# Western Hemisphere
 pairwise.distance.WH <- rdist.earth(west_Hem, miles=F)
 diag(pairwise.distance.WH) <- 0
 pairwise.distance.WH.01 <- apply(pairwise.distance.WH, 2, function(x) ifelse(x<250 & x>0, 1, 0))
 neig.list_WH <- apply(pairwise.distance.WH.01, 2, function(x) which(x==1))
+
+# Eastern Hemisphere
 pairwise.distance.EH <- rdist.earth(east_Hem, miles=F)
 diag(pairwise.distance.EH) <- 0
 pairwise.distance.EH.01 <- apply(pairwise.distance.EH, 2, function(x) ifelse(x<250 & x>0, 1, 0))
 neig.list_EH <- apply(pairwise.distance.EH.01, 2, function(x) which(x==1))
 
 
-#Compute bearing between every pairs of hexagons
+## Compute the bearing of the rhumb line between every pairs of hexagons and only keep the neighbouring hexagons
+
 pairwise.bearingsWH = t(apply(west_Hem, 1, function(x) bearingRhumb(x, west_Hem)))
 pairwise.bearingsEH = t(apply(east_Hem, 1, function(x) bearingRhumb(x, east_Hem)))
+
+pairwise.WH.01.bearings <- pairwise.distance.WH.01 * pairwise.bearingsWH
+pairwise.WH.01.bearings[pairwise.WH.01.bearings==0] <- NA
+pairwise.EH.01.bearings <- pairwise.distance.EH.01 * pairwise.bearingsEH
+pairwise.EH.01.bearings[pairwise.EH.01.bearings==0] <- NA
+
+
+## Probablity density function based on the bearing values
 
 proba_bearing <- function(x, blockBearings){
 	if(is.na(x) == T){prob <- 0}else{
@@ -495,12 +518,8 @@ proba_bearing <- function(x, blockBearings){
 }
 
 
-pairwise.WH.01.bearings <- pairwise.distance.WH.01 * pairwise.bearingsWH
-pairwise.WH.01.bearings[pairwise.WH.01.bearings==0] <- NA
-pairwise.EH.01.bearings <- pairwise.distance.EH.01 * pairwise.bearingsEH
-pairwise.EH.01.bearings[pairwise.EH.01.bearings==0] <- NA
+## Function to simulate n realistic geographical ranges	
 
-#Function to simulate n realistic geographical ranges	
 rangeSimulations <- function(presencesAbsences, latlong, neigList, pairwiseDists, pairwise01Bearings, n){
 	#Range features
 	occupied <- which(presencesAbsences == 1)
@@ -557,7 +576,9 @@ rangeSimulations <- function(presencesAbsences, latlong, neigList, pairwiseDists
 	return(ranges.sim)
 }
 	
-#Simulate 100 realistic geographical ranges for each observed seasonal range
+	
+## Simulate 100 realistic geographical ranges for each observed seasonal range
+
 simulated.ranges_BR_NH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) rangeSimulations(x, west_Hem, neig.list_WH, pairwise.distance.WH, pairwise.WH.01.bearings, 100))
 simulated.ranges_NB_NH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) rangeSimulations(x, west_Hem, neig.list_WH, pairwise.distance.WH, pairwise.WH.01.bearings, 100))
 simulated.ranges_BR_SH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) rangeSimulations(x, west_Hem, neig.list_WH, pairwise.distance.WH, pairwise.WH.01.bearings, 100))
@@ -573,7 +594,6 @@ simulated.ranges_NB_SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) rangeSimula
 
 
 
-
 ################################################################
 ################################################################
 
@@ -582,9 +602,12 @@ simulated.ranges_NB_SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) rangeSimula
 ################################################################
 ################################################################
 
-load("simuranges.RData")
 
-#Compute thermal distances for alternative migration options
+
+#load("simuranges.RData")
+
+## Compute thermal distances for alternative migration options
+
 thermal.distances.simulatedNH_WH <- list()
 for(i in 1:length(nonbreeding.thermal.nichesNH_WH)){
 	breeding.thermal.niches.simulated_NH_WH <- lapply(simulated.ranges_BR_NH_WH[[i]], function(x) nicheDensityRaster(cbind(TempMeanNS_WH[x], TempMinNS_WH[x])))
@@ -621,7 +644,8 @@ thermal.distances.simulated <- c(thermal.distances.simulatedNH_WH, thermal.dista
 
 
 
-#Compute habitat distances for alternative migration options
+## Compute habitat distances for alternative migration options
+
 habitat.distances.simulatedNH_WH <- list()
 for(i in 1:length(breeding.habitatNH_WH)){
 	breeding.habitat.simulated_NH_WH <- lapply(simulated.ranges_BR_NH_WH[[i]], function(x) mean(habitat[x]))
@@ -658,7 +682,8 @@ habitat.distances.simulated <- c(habitat.distances.simulatedNH_WH, habitat.dista
 
 
 
-#Compute geographical (migration) distance for alternative migration options
+## Compute geographical (migration) distance for alternative migration options
+
 centroids.simulatedBR_NH_WH <- lapply(simulated.ranges_BR_NH_WH, function(x) lapply(x, function(x2) apply(west_Hem[x2,], 2, mean)))
 centroids.simulatedNB_NH_WH <- lapply(simulated.ranges_NB_NH_WH, function(x) lapply(x, function(x2) apply(west_Hem[x2,], 2, mean)))
 geo.distances.simulatedNH_WH <- list()
@@ -694,7 +719,9 @@ for(i in 1:length(centroids.simulatedBR_SH_EH)){
 geo.distances.simulated <- c(geo.distances.simulatedNH_WH, geo.distances.simulatedNH_EH, geo.distances.simulatedSH_WH, geo.distances.simulatedSH_EH)
 
 
-#Compute resource scarcity for alternative migration options
+
+## Compute resource scarcity for alternative migration options
+
 resource.scarcity.simulatedBR_NH_WH <- lapply(simulated.ranges_BR_NH_WH, function(x) lapply(x, function(x2) mean(resourceScarcity_NS_WH[x2])))
 resource.scarcity.simulatedNB_NH_WH <- lapply(simulated.ranges_NB_NH_WH, function(x) lapply(x, function(x2) mean(resourceScarcity_NW_WH[x2])))
 resource.scarcity.simulatedNH_WH <- list()
@@ -731,73 +758,103 @@ resource.scarcity.simulated <- c(resource.scarcity.simulatedNH_WH, resource.scar
 
 
 
-#Compute ranks
+## Compute the rank of each observed migration among 200 migration alternatives
+
+# Considering thermal distance only
 ranks_thermal <- vector()
 for(i in 1:length(thermal.distances.simulated)){
 	ranks_thermal[i] <- length(which(thermal.distances.simulated[[i]] < thermal.distances.obs[i])) / length(thermal.distances.simulated[[i]])	
 }
+
+# Considering habitat distance only
 ranks_habitat <- vector()
 for(i in 1:length(habitat.distances.simulated)){
 	ranks_habitat[i] <- length(which(habitat.distances.simulated[[i]] < habitat.distances.obs[i])) / length(habitat.distances.simulated[[i]])	
 }
+
+# Considering geographical distance only
 ranks_geo <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	ranks_geo[i] <- length(which(geo.distances.simulated[[i]] < geo.distances.obs[i])) / length(geo.distances.simulated[[i]])	
 }
+
+# Considering resource scarcity only
 ranks_resource <- vector()
 for(i in 1:length(resource.scarcity.simulated)){
 	ranks_resource[i] <- length(which(resource.scarcity.simulated[[i]] < resource.scarcity.obs[i])) / length(resource.scarcity.simulated[[i]])	
 }
+
+# Considering geographical distance and thermal distance
 ranks_geo_thermal <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_thermal <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]]))
 	ranks_geo_thermal[i] <- length(which(geo_thermal[-1] < geo_thermal[1])) / length(geo_thermal[-1])	
 }
+
+# Considering geographical distance and resource scarcity
 ranks_geo_resource <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_resource <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_geo_resource[i] <- length(which(geo_resource[-1] < geo_resource[1])) / length(geo_resource[-1])	
 }
+
+# Considering thermal distance and resource scarcity
 ranks_thermal_resource <- vector()
 for(i in 1:length(thermal.distances.simulated)){
 	thermal_resource <- scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_thermal_resource[i] <- length(which(thermal_resource[-1] < thermal_resource[1])) / length(thermal_resource[-1])	
 }
+
+# Considering geographical distance and habitat distance
 ranks_geo_habitat <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_habitat <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]]))
 	ranks_geo_habitat[i] <- length(which(geo_habitat[-1] < geo_habitat[1])) / length(geo_habitat[-1])	
 }
+
+# Considering thermal distance and habitat distance
 ranks_thermal_habitat <- vector()
 for(i in 1:length(thermal.distances.simulated)){
 	thermal_habitat <- scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]]))
 	ranks_thermal_habitat[i] <- length(which(thermal_habitat[-1] < thermal_habitat[1])) / length(thermal_habitat[-1])	
 }
+
+# Considering habitat distance and resource scarcity
 ranks_habitat_resource <- vector()
 for(i in 1:length(habitat.distances.simulated)){
 	habitat_resource <- scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_habitat_resource[i] <- length(which(habitat_resource[-1] < habitat_resource[1])) / length(habitat_resource[-1])	
 }
+
+# Considering geographical distance, thermal distance and resource scarcity
 ranks_geo_thermal_resource <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_thermal_resource <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_geo_thermal_resource[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
 }
+
+# Considering geographical distance, habitat distance and resource scarcity
 ranks_geo_habitat_resource <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_habitat_resource <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_geo_habitat_resource[i] <- length(which(geo_habitat_resource[-1] < geo_habitat_resource[1])) / length(geo_habitat_resource[-1])	
 }
+
+# Considering geographical distance, thermal distance and habitat distance
 ranks_geo_thermal_habitat <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_thermal_habitat <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]]))
 	ranks_geo_thermal_habitat[i] <- length(which(geo_thermal_habitat[-1] < geo_thermal_habitat[1])) / length(geo_thermal_habitat[-1])	
 }
+
+# Considering thermal distance, habitat distance and resource scarcity
 ranks_thermal_habitat_resource <- vector()
 for(i in 1:length(habitat.distances.simulated)){
 	habitat_thermal_resource <- scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]])) + scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
 	ranks_thermal_habitat_resource[i] <- length(which(habitat_thermal_resource[-1] < habitat_thermal_resource[1])) / length(habitat_thermal_resource[-1])	
 }
+
+# Considering geographical distance, thermal distance, habitat distance and resource scarcity
 ranks_geo_thermal_habitat_resource <- vector()
 for(i in 1:length(geo.distances.simulated)){
 	geo_thermal_habitat_resource <- scale(c(geo.distances.obs[i], geo.distances.simulated[[i]])) + scale(c(thermal.distances.obs[i], thermal.distances.simulated[[i]])) + scale(c(habitat.distances.obs[i], habitat.distances.simulated[[i]])) + scale(c(resource.scarcity.obs[i], resource.scarcity.simulated[[i]]))
@@ -805,10 +862,318 @@ for(i in 1:length(geo.distances.simulated)){
 }
 
 
-## Analysis of simulated migration destination that are performing better than the observed one
 
-## Migration distance
- 
+
+####  Figure 2 - Frequency distributions of the scaled ranks of each species' observed migration among alternative simulated options  ####
+
+par(mfrow=c(5,3), mar=c(3.5,2.5,1,0.5), mgp=c(0.5,0.5,0))
+hist(ranks_geo, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
+mtext("Scaled rank for geographical distance", cex=0.65, side=1, line=1.7, at=0.5)
+mtext("A", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_thermal, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=70)
+mtext("Scaled rank for thermal distance", cex=0.65, side=1, line=1.7, at=0.5)
+mtext("B", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=40)
+mtext("Scaled rank for habitat distance", cex=0.65, side=1, line=1.7, at=0.5)
+mtext("C", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P = 0.0002", cex=1, side=3, line=-2, at=0.2)
+hist(ranks_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
+mtext("Scaled rank for resource scarcity", cex=0.65, side=1, line=1.7, at=0.5)
+mtext("D", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_geo_thermal, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=130)
+mtext("Scaled rank for geographical distance\n+ thermal distance", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("E", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_geo_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
+mtext("Scaled rank for geographical distance\n+ habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("F", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_geo_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=110)
+mtext("Scaled rank for geographical distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("G", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_thermal_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
+mtext("Scaled rank for thermal distance\n+ habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("H", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_thermal_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
+mtext("Scaled rank for thermal distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("I", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
+mtext("Scaled rank for habitat distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("J", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_geo_thermal_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=100)
+mtext("Scaled rank for geographical distance\n+ thermal distance + habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("K", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_geo_thermal_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=175)
+mtext("Scaled rank for geographical distance\n+ thermal distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("L", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_geo_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=100)
+mtext("Scaled rank for geographical distance\n+ habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("M", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+hist(ranks_thermal_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=70)
+mtext("Scaled rank for thermal distance\n+ habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("N", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
+hist(ranks_geo_thermal_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
+mtext("Number of species", cex=0.65, side=2, line=1.4, at=110)
+mtext("Scaled rank for geographical distance + thermal\ndistance + habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
+mtext("O", cex=1.2, side=3, line=-0.5, at=0.5)
+abline(a=65.2, b=0)
+mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
+
+#Kolmogorov-Smirnov tests of whether the distribution of ranks is left-skewed wompared to the uniform distribution
+ks.test(ranks_thermal, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_habitat, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_resource, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_thermal, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_habitat, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_resource, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_thermal_habitat, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_thermal_resource, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_thermal_habitat, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_thermal_resource, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_thermal_habitat_resource, runif(100000,0,1), alternative="greater")$p.value
+ks.test(ranks_geo_thermal_habitat_resource, runif(100000,0,1), alternative="greater")$p.value
+
+ks.test(ranks_geo_thermal, ranks_geo, alternative="greater")
+
+ks.test(ranks_geo_thermal_habitat_resource, ranks_geo_thermal_resource, alternative="greater")$p.value
+ks.test(ranks_geo_thermal_habitat_resource, ranks_geo_thermal_resource, alternative="greater")$p.value
+
+
+
+
+
+
+####  Figure 3: Global patterns in the apparent performance of species' migrations in relation to the alternative options available to them  ###
+
+
+ranks_geo_thermal_resourceNH_WH <- vector()
+for(i in 1:length(geo.distances.simulatedNH_WH)){
+	geo_thermal_resource <- scale(c(geo.distancesNH_WH[i], geo.distances.simulatedNH_WH[[i]])) + scale(c(thermal.distancesNH_WH[i], thermal.distances.simulatedNH_WH[[i]])) + scale(c(resource.scarcityNH_WH[i], resource.scarcity.simulatedNH_WH[[i]]))
+	ranks_geo_thermal_resourceNH_WH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
+}
+ranks_geo_thermal_resourceSH_WH <- vector()
+for(i in 1:length(geo.distances.simulatedSH_WH)){
+	geo_thermal_resource <- scale(c(geo.distancesSH_WH[i], geo.distances.simulatedSH_WH[[i]])) + scale(c(thermal.distancesSH_WH[i], thermal.distances.simulatedSH_WH[[i]])) + scale(c(resource.scarcitySH_WH[i], resource.scarcity.simulatedSH_WH[[i]]))
+	ranks_geo_thermal_resourceSH_WH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
+}
+ranks_geo_thermal_resourceWH <- c(ranks_geo_thermal_resourceNH_WH, ranks_geo_thermal_resourceSH_WH)
+ranks_geo_thermal_resourceNH_EH <- vector()
+for(i in 1:length(geo.distances.simulatedNH_EH)){
+	geo_thermal_resource <- scale(c(geo.distancesNH_EH[i], geo.distances.simulatedNH_EH[[i]])) + scale(c(thermal.distancesNH_EH[i], thermal.distances.simulatedNH_EH[[i]])) + scale(c(resource.scarcityNH_EH[i], resource.scarcity.simulatedNH_EH[[i]]))
+	ranks_geo_thermal_resourceNH_EH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
+}
+ranks_geo_thermal_resourceSH_EH <- vector()
+for(i in 1:length(geo.distances.simulatedSH_EH)){
+	geo_thermal_resource <- scale(c(geo.distancesSH_EH[i], geo.distances.simulatedSH_EH[[i]])) + scale(c(thermal.distancesSH_EH[i], thermal.distances.simulatedSH_EH[[i]])) + scale(c(resource.scarcitySH_EH[i], resource.scarcity.simulatedSH_EH[[i]]))
+	ranks_geo_thermal_resourceSH_EH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
+}
+ranks_geo_thermal_resourceEH <- c(ranks_geo_thermal_resourceNH_EH, ranks_geo_thermal_resourceSH_EH)
+pres.list_BR_NH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) hexidWH[which(x==1)])
+pres.list_NB_NH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) hexidWH[which(x==1)])
+pres.list_BR_SH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) hexidWH[which(x==1)])
+pres.list_NB_SH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) hexidWH[which(x==1)])
+pres.list_BR_NH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) hexidEH[which(x==1)])
+pres.list_NB_NH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) hexidEH[which(x==1)])
+pres.list_BR_SH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) hexidEH[which(x==1)])
+pres.list_NB_SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) hexidEH[which(x==1)])
+hex.weight_BR_WH <- vector()
+for(i in 1:length(hexidWH)){
+	hex.weight_BR_WH[i] <- sum(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_BR_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_BR_SH_WH, function(x) is.element(hexidWH[i],x))))]) / length(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_BR_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_BR_SH_WH, function(x) is.element(hexidWH[i],x))))])
+}
+hex.weight_NB_WH <- vector()
+for(i in 1:length(hexidWH)){
+	hex.weight_NB_WH[i] <- sum(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_NB_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_NB_SH_WH, function(x) is.element(hexidWH[i],x))))]) / length(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_NB_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_NB_SH_WH, function(x) is.element(hexidWH[i],x))))])
+}
+hex.weight_BR_EH <- vector()
+for(i in 1:length(hexidEH)){
+	hex.weight_BR_EH[i] <- sum(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_BR_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_BR_SH_EH, function(x) is.element(hexidEH[i],x))))]) / length(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_BR_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_BR_SH_EH, function(x) is.element(hexidEH[i],x))))])
+}
+hex.weight_NB_EH <- vector()
+for(i in 1:length(hexidEH)){
+	hex.weight_NB_EH[i] <- sum(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_NB_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_NB_SH_EH, function(x) is.element(hexidEH[i],x))))]) / length(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_NB_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_NB_SH_EH, function(x) is.element(hexidEH[i],x))))])
+}
+hex.weightBR <- c(hex.weight_BR_WH, hex.weight_BR_EH)
+hex.weightNB <- c(hex.weight_NB_WH, hex.weight_NB_EH)
+
+#Plot weighted richness
+jpeg("Figure3.jpg", width=1200, height=800, quality=100)
+par(mfrow=c(2,2), mar=c(0.1,0.1,1.4,0.1), mgp=c(1.5,0.5,0))
+rbPal <- colorRampPalette(c("yellow", "red3"))
+datcol <- rbPal(5)[as.numeric(cut(hex.weightBR, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
+datcol[which(is.na(datcol)==T)] <- "white"
+plot(hexgrid2, col=datcol, border=datcol, bg="grey")
+mtext("A", cex=1.9, side=3, line=-2, at=-180)
+mtext("Breeding season", cex=1.5, side=3, line=0.15, at=0)
+legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Average rank\nof migrants", c("> 0.4","0.3–0.4", "0.2–0.3", "0.1–0.2", "0–0.1", "No species"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
+datcol <- rbPal(5)[as.numeric(cut(hex.weightNB, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
+datcol[which(is.na(datcol)==T)] <- "white"
+plot(hexgrid2, col=datcol, border=datcol, bg="grey")
+mtext("B", cex=1.9, side=3, line=-2, at=-180)
+mtext("Non-breeding season", cex=1.5, side=3, line=0.15, at=0)
+
+#Plot observed richness in migrants
+PresAbs_BR_WH <- cbind(PresAbs_BR_NH_WH2, PresAbs_BR_SH_WH2)
+PresAbs_NB_WH <- cbind(PresAbs_NB_NH_WH2, PresAbs_NB_SH_WH2)
+PresAbs_BR_EH <- cbind(PresAbs_BR_NH_EH2, PresAbs_BR_SH_EH2)
+PresAbs_NB_EH <- cbind(PresAbs_NB_NH_EH2, PresAbs_NB_SH_EH2)
+mbr <- c(apply(PresAbs_BR_WH, 1, sum), apply(PresAbs_BR_EH, 1, sum))
+mnb <- c(apply(PresAbs_NB_WH, 1, sum), apply(PresAbs_NB_EH, 1, sum))
+rbPal <- colorRampPalette(c("yellow3", "dark green"))
+datcol <- rbPal(5)[as.numeric(cut(mbr, breaks=c(0.9,25,50,75,100,150)))]
+datcol[which(is.na(datcol)==T)] <- "white"
+plot(hexgrid2, col=datcol, border=datcol, bg="grey")
+mtext("C", cex=1.9, side=3, line=-2, at=-180)
+legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Richness\nin migrants", c("> 100","75–100", "50–75", "25–50", "1–25", "0"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
+datcol <- rbPal(5)[as.numeric(cut(mnb, breaks=c(0.9,25,50,75,100,150)))]
+datcol[which(is.na(datcol)==T)] <- "white"
+plot(hexgrid2, col=datcol, border=datcol, bg="grey")
+mtext("D", cex=1.9, side=3, line=-2, at=-180)
+dev.off()
+
+
+
+
+####  Figure 4: Connections between the breeding and non-breeding ranges of species according to the apparent performance of their migration in relation to the alternatives available to them   ###
+
+
+centroids.breeding.grounds <- rbind(centroids.breeding.groundsNH_WH, centroids.breeding.groundsNH_EH, centroids.breeding.groundsSH_WH, centroids.breeding.groundsSH_EH)
+centroids.nonbreeding.grounds <- rbind(centroids.nonbreeding.groundsNH_WH, centroids.nonbreeding.groundsNH_EH, centroids.nonbreeding.groundsSH_WH, centroids.nonbreeding.groundsSH_EH)
+#Split the species into 3 groups: good rank, intermerdiate rank and bad rank
+centroids.breeding.grounds_1 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource < 0.1),]
+centroids.nonbreeding.grounds_1 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource < 0.1),]
+centroids.breeding.grounds_2 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource >= 0.1 & ranks_geo_thermal_resource <= 0.5),]
+centroids.nonbreeding.grounds_2 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource >= 0.1 & ranks_geo_thermal_resource <= 0.5),]
+centroids.breeding.grounds_3 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource > 0.5),]
+centroids.nonbreeding.grounds_3 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource > 0.5),]
+#Plot
+jpeg("Figure4.jpg", width=600, height=1000, quality=100)
+par(mfrow=c(3,1), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+points(centroids.breeding.grounds_1, pch=20, col="red", cex=0.3)
+points(centroids.nonbreeding.grounds_1, pch=20, col="blue", cex=0.3)
+for(i in 1:length(centroids.breeding.grounds_1[,1])){
+	inter <- gcIntermediate(centroids.breeding.grounds_1[i,], centroids.nonbreeding.grounds_1[i,], n=50, addStartEnd=T)
+	lines(inter, lwd=1, col="yellow")
+}
+mtext("A", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("Scaled rank < 0.1", cex=1.5, side=1, line=-2.2, at=25)
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+points(centroids.breeding.grounds_2, pch=20, col="red", cex=0.3)
+points(centroids.nonbreeding.grounds_2, pch=20, col="blue", cex=0.3)
+for(i in 1:length(centroids.breeding.grounds_2[,1])){
+	inter <- gcIntermediate(centroids.breeding.grounds_2[i,], centroids.nonbreeding.grounds_2[i,], n=50, addStartEnd=T)
+	lines(inter, lwd=1, col="orange")
+}
+mtext("B", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("0.1 <= Scaled rank <= 0.5", cex=1.5, side=1, line=-2.2, at=25)
+plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
+points(centroids.breeding.grounds_3, pch=20, col="red", cex=0.3)
+points(centroids.nonbreeding.grounds_3, pch=20, col="blue", cex=0.3)
+for(i in 1:length(centroids.breeding.grounds_3[,1])){
+	inter <- gcIntermediate(centroids.breeding.grounds_3[i,], centroids.nonbreeding.grounds_3[i,], n=50, addStartEnd=T)
+	lines(inter, lwd=1, col="brown4")
+}
+mtext("C", cex=1.9, side=3, line=-2.2, at=-180)
+mtext("Scaled rank > 0.5", cex=1.5, side=1, line=-2.2, at=25)
+dev.off()
+
+
+
+
+
+
+### Figure A2 - illustrating how the ranks were computed using Schrenck's Bittern (Ixobrychus.eurhythmus) ###
+
+jpeg("FigureA2.jpg", width=800, height=600, quality=100)
+par(mfrow=c(2,2), mar=c(2.5,2.5,0.2,1.5), mgp=c(1.5,0.5,0))
+plot(hexgridEH, col="grey", border = "grey")
+plot(hexgridEH[match(PresAbs_BR_NH[which(PresAbs_BR_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[182]][[73]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[182]][[57]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+mtext("A", cex=1.8, side=3, line=-1.5, at=-50)
+plot(scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])), scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])), pch=20, axes=F, xlab="Geographical distance", ylab = "Thermal distance", cex.lab=1.2, add=F)
+axis(1,at=c(-2,-1,0,1,2), labels=c(-2,-1,0,1,2))
+axis(2,at=c(-2,-1,0,1,2,3), labels=c(-2,-1,0,1,2,3))
+abline(a = scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]]))[1], b = 0, col="orange")
+abline(a = (scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])) + scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])))[1], b = -1, col="blue")
+points(scale(c(geo.distances.obs[406], geo.distances.simulated[[406]]))[1], scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]]))[1], pch=20, col="red3", cex=2.5)
+mtext("C", cex=1.8, side=3, line=-1.5, at=-2.35)
+plot(hexgridEH, col="grey", border = "grey")
+plot(hexgridEH[match(PresAbs_NB_NH[which(PresAbs_NB_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[182]][[77]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[182]][[66]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
+mtext("B", cex=1.8, side=3, line=-1.5, at=-50)
+geo_thermal_resource_schrenck <- scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])) + scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])) + scale(c(resource.scarcity.obs[406], resource.scarcity.simulated[[406]]))
+plot(geo_thermal_resource_schrenck, rnorm(length(geo_thermal_resource_schrenck), 1, 0.1), pch=20, axes=F, xlab="Thermal distance + geographical distance + resource scarcity", ylab = "", ylim=c(0,2), cex.lab=1.2)
+axis(1,at=c(-3,-2,-1,0,1,2,3), labels=c(-3,-2,-1,0,1,2,3))
+abline(v=geo_thermal_resource_schrenck[1], col="green")
+points(geo_thermal_resource_schrenck[1], 1, pch=20, ylim=c(0,2), col="red3", cex=2.5)
+mtext("D", cex=1.8, side=3, line=-1.5, at=-3.7)
+dev.off()
+
+
+
+
+
+###  Export excel table for appendix of publication
+
+species.names <- c(names(PresAbs_BR_NH_WH2), names(PresAbs_BR_NH_EH2), names(PresAbs_BR_SH_WH2), names(PresAbs_BR_SH_EH2))
+longitudinal.hemisphere <- c(rep("WH", length(PresAbs_BR_NH_WH2[1,])), rep("EH", length(PresAbs_BR_NH_EH2[1,])), rep("WH", length(PresAbs_BR_SH_WH2[1,])), rep("EH", length(PresAbs_BR_SH_EH2[1,])))
+xlsTable <- cbind(species.names, longitudinal.hemisphere, geo.distances.obs, thermal.distances.obs, habitat.distances.obs, resource.scarcity.obs, ranks_geo, ranks_thermal, ranks_habitat, ranks_resource, ranks_geo_thermal, ranks_geo_habitat, ranks_geo_resource, ranks_thermal_habitat, ranks_thermal_resource, ranks_habitat_resource, ranks_geo_thermal_habitat, ranks_geo_thermal_resource, ranks_geo_habitat_resource, ranks_thermal_habitat_resource, ranks_geo_thermal_habitat_resource)
+colnames(xlsTable) <- c("species name", "Longitudinal hemisphere", "Geographical distance", "Thermal distance", "Habitat distance", "Resource scarcity", "Scaled rank geo distance", "Scaled rank thermal distance", "Scaled rank habitat distance", "Scaled rank resource scarcity", "Scaled rank geo distance + thermal distance", "Scaled rank geo distance + habitat distance", "Scaled rank geo distance + resource scarcity", "Scaled rank thermal distance + habitat distance", "Scaled rank thermal distance + resource scarcity", "Scaled rank habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance", "Scaled rank geo distance + thermal distance + resource scarcity", "Scaled rank geo distance + habitat distance + resource scarcity", "Scaled rank thermal distance + habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance + resource scarcity")
+xlsTable <- xlsTable[order(species.names),]
+write.csv(xlsTable, "Appendix1.csv")
+
+
+
+
+
+
+####  Analysis of simulated migration destinations that are performing better than the observed one  ####
+
+
+## Variables separated between western and eastern hemispheres
+
 geo.distances.obs_WH <- c(geo.distancesNH_WH, geo.distancesSH_WH) 
 geo.distances.obs_EH <- c(geo.distancesNH_EH, geo.distancesSH_EH)
 thermal.distances.obs_WH <- c(thermal.distancesNH_WH, thermal.distancesSH_WH) 
@@ -821,6 +1186,9 @@ thermal.distances.simulated_WH <- c(thermal.distances.simulatedNH_WH, thermal.di
 thermal.distances.simulated_EH <- c(thermal.distances.simulatedNH_EH, thermal.distances.simulatedSH_EH)
 resource.scarcity.simulated_WH <- c(resource.scarcity.simulatedNH_WH, resource.scarcity.simulatedSH_WH)
 resource.scarcity.simulated_EH <- c(resource.scarcity.simulatedNH_EH, resource.scarcity.simulatedSH_EH)
+
+
+## Select simulated migration destinations that are performing better than the observed one
 
 geo_best_simu_brsim_WH <- list()
 geo_best_simu_nbsim_WH <- list()
@@ -863,7 +1231,6 @@ for(i in 1:length(geo_best_simu_brsim_dist_EH)){
 	geo_best_simu_nbsim_dist_diff_EH[[i]] <- geo_best_simu_nbsim_dist_EH[[i]] - geo.distances.obs_EH[i]
 }
 
-
 geo_best_simu_brsim_dist_diff_mean_WH <- unlist(lapply(geo_best_simu_brsim_dist_diff_WH, mean))
 geo_best_simu_nbsim_dist_diff_mean_WH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_WH, mean))
 geo_best_simu_brsim_dist_diff_mean_EH <- unlist(lapply(geo_best_simu_brsim_dist_diff_EH, mean))
@@ -877,8 +1244,9 @@ best_simu_nbsim_number_EH <- unlist(lapply(geo_best_simu_nbsim_dist_diff_EH, len
 
 
 
-## Migration longitude
+## Migration longitude (computed as the average between the longitude of the centroid of the breeding range and  the longitude of the centroid of the non-breeding range)
 
+# Observed migrations
 lon_obs_NH_WH <- vector()
 for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
 	lon_obs_NH_WH[i] <- centroids.breeding.groundsNH_WH[i,1] - centroids.nonbreeding.groundsNH_WH[i,1]
@@ -898,27 +1266,7 @@ for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
 lon_obs_WH <- c(lon_obs_NH_WH, lon_obs_SH_WH)
 lon_obs_EH <- c(lon_obs_NH_EH, lon_obs_SH_EH)
 
-lat_obs_NH_WH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
-	lat_obs_NH_WH[i] <- abs(centroids.breeding.groundsNH_WH[i,2] - centroids.nonbreeding.groundsNH_WH[i,2])
-}
-lat_obs_SH_WH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
-	lat_obs_SH_WH[i] <- abs(centroids.breeding.groundsSH_WH[i,2] - centroids.nonbreeding.groundsSH_WH[i,2])
-}
-lat_obs_NH_EH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
-	lat_obs_NH_EH[i] <- abs(centroids.breeding.groundsNH_EH[i,2] - centroids.nonbreeding.groundsNH_EH[i,2])
-}
-lat_obs_SH_EH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
-	lat_obs_SH_EH[i] <- abs(centroids.breeding.groundsSH_EH[i,2] - centroids.nonbreeding.groundsSH_EH[i,2])
-}
-lat_obs_WH <- c(lat_obs_NH_WH, lat_obs_SH_WH)
-lat_obs_EH <- c(lat_obs_NH_EH, lat_obs_SH_EH)
-
-
-
+# Simulated migrations
 lon_sim_NH_WH_nbsim <- list()
 lon_sim_NH_WH_brsim <- list()
 for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){	
@@ -999,6 +1347,29 @@ lon_brsim_best_simu_mean_EH <- unlist(lapply(lon_brsim_best_simu_sel_EH, mean))
 
 
 
+## Migration latitude (computed as the average between the longitude of the centroid of the breeding range and  the longitude of the centroid of the non-breeding range)
+
+# Observed migrations
+lat_obs_NH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
+	lat_obs_NH_WH[i] <- abs(centroids.breeding.groundsNH_WH[i,2] - centroids.nonbreeding.groundsNH_WH[i,2])
+}
+lat_obs_SH_WH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
+	lat_obs_SH_WH[i] <- abs(centroids.breeding.groundsSH_WH[i,2] - centroids.nonbreeding.groundsSH_WH[i,2])
+}
+lat_obs_NH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
+	lat_obs_NH_EH[i] <- abs(centroids.breeding.groundsNH_EH[i,2] - centroids.nonbreeding.groundsNH_EH[i,2])
+}
+lat_obs_SH_EH <- vector()
+for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
+	lat_obs_SH_EH[i] <- abs(centroids.breeding.groundsSH_EH[i,2] - centroids.nonbreeding.groundsSH_EH[i,2])
+}
+lat_obs_WH <- c(lat_obs_NH_WH, lat_obs_SH_WH)
+lat_obs_EH <- c(lat_obs_NH_EH, lat_obs_SH_EH)
+
+# Simulated migrations
 lat_sim_NH_WH_nbsim <- list()
 lat_sim_NH_WH_brsim <- list()
 for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){	
@@ -1080,17 +1451,13 @@ lat_brsim_best_simu_mean_EH <- unlist(lapply(lat_brsim_best_simu_sel_EH, mean))
 
 
 
-
-
-
-
-
 # Are better performing simulated migratory destinations mostly driven by simulated breeding range or simulated non-breeding range?
 
 plot(best_simu_brsim_number_WH, best_simu_nbsim_number_WH)
 points(1:100,1:100,type="l")
 plot(best_simu_brsim_number_EH, best_simu_nbsim_number_EH)
 points(1:100,1:100,type="l")
+
 
 # Comparing migration distance and bearing of better simulated migration distance with the observed ones
 
@@ -1100,59 +1467,10 @@ plot(geo_best_simu_brsim_dist_diff_mean_EH, bearing_brsim_best_simu_diff_mean_EH
 plot(geo_best_simu_nbsim_dist_diff_mean_EH, bearing_nbsim_best_simu_diff_mean_EH, pch=20)
 
 
-# Plot migration arcs for some species
-
-centroids.breeding.grounds_WH <- rbind(centroids.breeding.groundsNH_WH, centroids.breeding.groundsSH_WH)
-centroids.nonbreeding.grounds_WH <- rbind(centroids.nonbreeding.groundsNH_WH, centroids.nonbreeding.groundsSH_WH)
-centroids.breeding.grounds_EH <- rbind(centroids.breeding.groundsNH_EH, centroids.breeding.groundsSH_EH)
-centroids.nonbreeding.grounds_EH <- rbind(centroids.nonbreeding.groundsNH_EH, centroids.nonbreeding.groundsSH_EH)
-
-centroids.simu_nbsim_WH <- c(centroids.simulatedNB_NH_WH, centroids.simulatedNB_SH_WH)
-centroids.simu_brsim_WH <- c(centroids.simulatedBR_NH_WH, centroids.simulatedBR_SH_WH)
-centroids.simu_nbsim_EH <- c(centroids.simulatedNB_NH_EH, centroids.simulatedNB_SH_EH)
-centroids.simu_brsim_EH <- c(centroids.simulatedBR_NH_EH, centroids.simulatedBR_SH_EH)
-
-centroids.simu_nbsim_sel_WH <- list()
-centroids.simu_brsim_sel_WH <- list()
-for(i in 1:length(geo_best_simu_nbsim_WH)){
-	centroids.simu_nbsim_sel_WH[[i]] <- centroids.simu_nbsim_WH[[i]][geo_best_simu_nbsim_WH[[i]]]
-	centroids.simu_brsim_sel_WH[[i]] <- centroids.simu_brsim_WH[[i]][geo_best_simu_brsim_WH[[i]]]
-}
-centroids.simu_nbsim_sel_EH <- list()
-centroids.simu_brsim_sel_EH <- list()
-for(i in 1:length(geo_best_simu_nbsim_EH)){
-	centroids.simu_nbsim_sel_EH[[i]] <- centroids.simu_nbsim_EH[[i]][geo_best_simu_nbsim_EH[[i]]]
-	centroids.simu_brsim_sel_EH[[i]] <- centroids.simu_brsim_EH[[i]][geo_best_simu_brsim_EH[[i]]]
-}
 
 
 
-
-#plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
-
-k = k+1
-
-plot(centroids.breeding.grounds_EH[k,1], centroids.breeding.grounds_EH[k,2], pch=20, col="red", cex=0.3, xlim=c(-180,180), ylim=c(-90,90))
-for(i in 1:length(centroids.simu_brsim_sel_EH[[k]])){
-	inter <- gcIntermediate(centroids.simu_brsim_sel_EH[[k]][[i]], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
-	lines(inter, lwd=1, col="green")
-	points(centroids.simu_brsim_sel_EH[[k]][[i]][1], centroids.simu_brsim_sel_EH[[k]][[i]][2], pch=20, col="red", cex=0.3)
-}
-for(i in 1:length(centroids.simu_nbsim_sel_EH[[k]])){
-	inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.simu_nbsim_sel_EH[[k]][[i]], n=50, addStartEnd=T)
-	lines(inter, lwd=1, col="yellow")
-	points(centroids.simu_nbsim_sel_EH[[k]][[i]][1], centroids.simu_nbsim_sel_EH[[k]][[i]][2], pch=20, col="blue", cex=0.3)
-}
-points(centroids.breeding.grounds_EH[k,1], centroids.breeding.grounds_EH[k,2], pch=20, col="red", cex=0.5)
-points(centroids.nonbreeding.grounds_EH[k,1], centroids.nonbreeding.grounds_EH[k,2], pch=20, col="blue", cex=0.5)
-inter <- gcIntermediate(centroids.breeding.grounds_EH[k,], centroids.nonbreeding.grounds_EH[k,], n=50, addStartEnd=T)
-lines(inter, lwd=1, col="grey")
-
-lon_brsim_best_simu_mean_EH[k]
-geo_best_simu_brsim_dist_diff_mean_EH[k]
-lon_nbsim_best_simu_mean_EH[k]
-geo_best_simu_nbsim_dist_diff_mean_EH[k]
-
+####   Fig A4: Contrast between the locations of the observed migratory destinations of each species, and of the simulated alterative migration options that performe better than the observed
 
 
 lon_brsim_best_simu_mean_EH[which(lon_brsim_best_simu_mean_EH=="NaN")] <- 0
@@ -1200,7 +1518,33 @@ abline(v=0)
 
 
 
-## PLOT for simulated breeding ranges
+
+centroids.breeding.grounds_WH <- rbind(centroids.breeding.groundsNH_WH, centroids.breeding.groundsSH_WH)
+centroids.nonbreeding.grounds_WH <- rbind(centroids.nonbreeding.groundsNH_WH, centroids.nonbreeding.groundsSH_WH)
+centroids.breeding.grounds_EH <- rbind(centroids.breeding.groundsNH_EH, centroids.breeding.groundsSH_EH)
+centroids.nonbreeding.grounds_EH <- rbind(centroids.nonbreeding.groundsNH_EH, centroids.nonbreeding.groundsSH_EH)
+
+centroids.simu_nbsim_WH <- c(centroids.simulatedNB_NH_WH, centroids.simulatedNB_SH_WH)
+centroids.simu_brsim_WH <- c(centroids.simulatedBR_NH_WH, centroids.simulatedBR_SH_WH)
+centroids.simu_nbsim_EH <- c(centroids.simulatedNB_NH_EH, centroids.simulatedNB_SH_EH)
+centroids.simu_brsim_EH <- c(centroids.simulatedBR_NH_EH, centroids.simulatedBR_SH_EH)
+
+centroids.simu_nbsim_sel_WH <- list()
+centroids.simu_brsim_sel_WH <- list()
+for(i in 1:length(geo_best_simu_nbsim_WH)){
+	centroids.simu_nbsim_sel_WH[[i]] <- centroids.simu_nbsim_WH[[i]][geo_best_simu_nbsim_WH[[i]]]
+	centroids.simu_brsim_sel_WH[[i]] <- centroids.simu_brsim_WH[[i]][geo_best_simu_brsim_WH[[i]]]
+}
+centroids.simu_nbsim_sel_EH <- list()
+centroids.simu_brsim_sel_EH <- list()
+for(i in 1:length(geo_best_simu_nbsim_EH)){
+	centroids.simu_nbsim_sel_EH[[i]] <- centroids.simu_nbsim_EH[[i]][geo_best_simu_nbsim_EH[[i]]]
+	centroids.simu_brsim_sel_EH[[i]] <- centroids.simu_brsim_EH[[i]][geo_best_simu_brsim_EH[[i]]]
+}
+
+
+
+####   Fig A5: Mapping species migrations according to the performance of the breeding range compared to simulated alternative migrations
 
 par(mfrow=c(2,2), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
 
@@ -1363,7 +1707,7 @@ for(k in 1:length(centroids.breeding.grounds_WH[,1])){
 }
 
 
-## PLOT for simulated non-breeding ranges
+####   Fig A5: Mapping species migrations according to the performance of the non-breeding range compared to simulated alternative migrations
 
 par(mfrow=c(2,2), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
 
@@ -1536,461 +1880,9 @@ for(k in 1:length(centroids.breeding.grounds_WH[,1])){
 
 
 
-### Figure S2 - illustrating how the ranks were computed using Schrenck's Bittern (Ixobrychus.eurhythmus) ###
 
-jpeg("FigureS2.jpg", width=800, height=600, quality=100)
-#postscript("Fig4.ps", width=74, height=48)
-par(mfrow=c(2,2), mar=c(2.5,2.5,0.2,1.5), mgp=c(1.5,0.5,0))
-plot(hexgridEH, col="grey", border = "grey")
-plot(hexgridEH[match(PresAbs_BR_NH[which(PresAbs_BR_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[182]][[73]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_BR_NH_EH[[182]][[57]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
-mtext("A", cex=1.8, side=3, line=-1.5, at=-50)
-plot(scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])), scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])), pch=20, axes=F, xlab="Geographical distance", ylab = "Thermal distance", cex.lab=1.2, add=F)
-axis(1,at=c(-2,-1,0,1,2), labels=c(-2,-1,0,1,2))
-axis(2,at=c(-2,-1,0,1,2,3), labels=c(-2,-1,0,1,2,3))
-abline(a = scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]]))[1], b = 0, col="orange")
-abline(a = (scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])) + scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])))[1], b = -1, col="blue")
-points(scale(c(geo.distances.obs[406], geo.distances.simulated[[406]]))[1], scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]]))[1], pch=20, col="red3", cex=2.5)
-mtext("C", cex=1.8, side=3, line=-1.5, at=-2.35)
-plot(hexgridEH, col="grey", border = "grey")
-plot(hexgridEH[match(PresAbs_NB_NH[which(PresAbs_NB_NH[,which(colnames(PresAbs_NB_NH) == "Ixobrychus.eurhythmus")] == 1),1], hexgridEH@data[,1]),], col="red3", border = "red3", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[182]][[77]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
-plot(hexgridEH[match(hexidEH[simulated.ranges_NB_NH_EH[[182]][[66]]], hexgridEH@data[,1]),], col="black", border = "black", add=T)
-mtext("B", cex=1.8, side=3, line=-1.5, at=-50)
-geo_thermal_resource_schrenck <- scale(c(geo.distances.obs[406], geo.distances.simulated[[406]])) + scale(c(thermal.distances.obs[406], thermal.distances.simulated[[406]])) + scale(c(resource.scarcity.obs[406], resource.scarcity.simulated[[406]]))
-plot(geo_thermal_resource_schrenck, rnorm(length(geo_thermal_resource_schrenck), 1, 0.1), pch=20, axes=F, xlab="Thermal distance + geographical distance + resource scarcity", ylab = "", ylim=c(0,2), cex.lab=1.2)
-axis(1,at=c(-3,-2,-1,0,1,2,3), labels=c(-3,-2,-1,0,1,2,3))
-abline(v=geo_thermal_resource_schrenck[1], col="green")
-points(geo_thermal_resource_schrenck[1], 1, pch=20, ylim=c(0,2), col="red3", cex=2.5)
-mtext("D", cex=1.8, side=3, line=-1.5, at=-3.7)
-dev.off()
 
 
 
-
-
-### Figure 2 - histograms of ranks ###
-
-par(mfrow=c(5,3), mar=c(3.5,2.5,1,0.5), mgp=c(0.5,0.5,0))
-hist(ranks_geo, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
-mtext("Scaled rank for geographical distance", cex=0.65, side=1, line=1.7, at=0.5)
-mtext("A", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_thermal, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=70)
-mtext("Scaled rank for thermal distance", cex=0.65, side=1, line=1.7, at=0.5)
-mtext("B", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=40)
-mtext("Scaled rank for habitat distance", cex=0.65, side=1, line=1.7, at=0.5)
-mtext("C", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P = 0.0002", cex=1, side=3, line=-2, at=0.2)
-hist(ranks_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
-mtext("Scaled rank for resource scarcity", cex=0.65, side=1, line=1.7, at=0.5)
-mtext("D", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_geo_thermal, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=130)
-mtext("Scaled rank for geographical distance\n+ thermal distance", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("E", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_geo_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
-mtext("Scaled rank for geographical distance\n+ habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("F", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_geo_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=110)
-mtext("Scaled rank for geographical distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("G", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_thermal_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
-mtext("Scaled rank for thermal distance\n+ habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("H", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_thermal_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=80)
-mtext("Scaled rank for thermal distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("I", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=60)
-mtext("Scaled rank for habitat distance\n+ resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("J", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_geo_thermal_habitat, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=100)
-mtext("Scaled rank for geographical distance\n+ thermal distance + habitat distance", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("K", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_geo_thermal_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=175)
-mtext("Scaled rank for geographical distance\n+ thermal distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("L", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_geo_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=100)
-mtext("Scaled rank for geographical distance\n+ habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("M", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-hist(ranks_thermal_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=70)
-mtext("Scaled rank for thermal distance\n+ habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("N", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-4, at=0.8)
-hist(ranks_geo_thermal_habitat_resource, main="", ylab="", xlab="", xlim=c(0,1), cex.lab=1, cex.axis=0.8, col="grey", border="white", breaks=10)
-mtext("Number of species", cex=0.65, side=2, line=1.4, at=110)
-mtext("Scaled rank for geographical distance + thermal\ndistance + habitat distance + resource scarcity", cex=0.65, side=1, line=2.2, at=0.5)
-mtext("O", cex=1.2, side=3, line=-0.5, at=0.5)
-abline(a=65.2, b=0)
-mtext("P < 0.0001", cex=1, side=3, line=-5, at=0.8)
-
-
-
-
-
-#Kolmogorov-Smirnov tests of whether the distribution of ranks is left-skewed wompared to the uniform distribution
-ks.test(ranks_thermal, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_habitat, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_resource, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_thermal, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_habitat, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_resource, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_thermal_habitat, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_thermal_resource, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_thermal_habitat, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_thermal_resource, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_thermal_habitat_resource, runif(100000,0,1), alternative="greater")$p.value
-ks.test(ranks_geo_thermal_habitat_resource, runif(100000,0,1), alternative="greater")$p.value
-
-ks.test(ranks_geo_thermal, ranks_geo, alternative="greater")
-
-ks.test(ranks_geo_thermal_habitat_resource, ranks_geo_thermal_resource, alternative="greater")$p.value
-ks.test(ranks_geo_thermal_habitat_resource, ranks_geo_thermal_resource, alternative="greater")$p.value
-
-
-
-
-
-### Figure 3 - Weighted Richness Maps ###
-
-ranks_geo_thermal_resourceNH_WH <- vector()
-for(i in 1:length(geo.distances.simulatedNH_WH)){
-	geo_thermal_resource <- scale(c(geo.distancesNH_WH[i], geo.distances.simulatedNH_WH[[i]])) + scale(c(thermal.distancesNH_WH[i], thermal.distances.simulatedNH_WH[[i]])) + scale(c(resource.scarcityNH_WH[i], resource.scarcity.simulatedNH_WH[[i]]))
-	ranks_geo_thermal_resourceNH_WH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
-}
-ranks_geo_thermal_resourceSH_WH <- vector()
-for(i in 1:length(geo.distances.simulatedSH_WH)){
-	geo_thermal_resource <- scale(c(geo.distancesSH_WH[i], geo.distances.simulatedSH_WH[[i]])) + scale(c(thermal.distancesSH_WH[i], thermal.distances.simulatedSH_WH[[i]])) + scale(c(resource.scarcitySH_WH[i], resource.scarcity.simulatedSH_WH[[i]]))
-	ranks_geo_thermal_resourceSH_WH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
-}
-ranks_geo_thermal_resourceWH <- c(ranks_geo_thermal_resourceNH_WH, ranks_geo_thermal_resourceSH_WH)
-ranks_geo_thermal_resourceNH_EH <- vector()
-for(i in 1:length(geo.distances.simulatedNH_EH)){
-	geo_thermal_resource <- scale(c(geo.distancesNH_EH[i], geo.distances.simulatedNH_EH[[i]])) + scale(c(thermal.distancesNH_EH[i], thermal.distances.simulatedNH_EH[[i]])) + scale(c(resource.scarcityNH_EH[i], resource.scarcity.simulatedNH_EH[[i]]))
-	ranks_geo_thermal_resourceNH_EH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
-}
-ranks_geo_thermal_resourceSH_EH <- vector()
-for(i in 1:length(geo.distances.simulatedSH_EH)){
-	geo_thermal_resource <- scale(c(geo.distancesSH_EH[i], geo.distances.simulatedSH_EH[[i]])) + scale(c(thermal.distancesSH_EH[i], thermal.distances.simulatedSH_EH[[i]])) + scale(c(resource.scarcitySH_EH[i], resource.scarcity.simulatedSH_EH[[i]]))
-	ranks_geo_thermal_resourceSH_EH[i] <- length(which(geo_thermal_resource[-1] < geo_thermal_resource[1])) / length(geo_thermal_resource[-1])	
-}
-ranks_geo_thermal_resourceEH <- c(ranks_geo_thermal_resourceNH_EH, ranks_geo_thermal_resourceSH_EH)
-pres.list_BR_NH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) hexidWH[which(x==1)])
-pres.list_NB_NH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) hexidWH[which(x==1)])
-pres.list_BR_SH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) hexidWH[which(x==1)])
-pres.list_NB_SH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) hexidWH[which(x==1)])
-pres.list_BR_NH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) hexidEH[which(x==1)])
-pres.list_NB_NH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) hexidEH[which(x==1)])
-pres.list_BR_SH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) hexidEH[which(x==1)])
-pres.list_NB_SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) hexidEH[which(x==1)])
-hex.weight_BR_WH <- vector()
-for(i in 1:length(hexidWH)){
-	hex.weight_BR_WH[i] <- sum(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_BR_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_BR_SH_WH, function(x) is.element(hexidWH[i],x))))]) / length(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_BR_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_BR_SH_WH, function(x) is.element(hexidWH[i],x))))])
-}
-hex.weight_NB_WH <- vector()
-for(i in 1:length(hexidWH)){
-	hex.weight_NB_WH[i] <- sum(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_NB_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_NB_SH_WH, function(x) is.element(hexidWH[i],x))))]) / length(ranks_geo_thermal_resourceWH[c(unlist(lapply(pres.list_NB_NH_WH, function(x) is.element(hexidWH[i],x))), unlist(lapply(pres.list_NB_SH_WH, function(x) is.element(hexidWH[i],x))))])
-}
-hex.weight_BR_EH <- vector()
-for(i in 1:length(hexidEH)){
-	hex.weight_BR_EH[i] <- sum(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_BR_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_BR_SH_EH, function(x) is.element(hexidEH[i],x))))]) / length(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_BR_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_BR_SH_EH, function(x) is.element(hexidEH[i],x))))])
-}
-hex.weight_NB_EH <- vector()
-for(i in 1:length(hexidEH)){
-	hex.weight_NB_EH[i] <- sum(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_NB_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_NB_SH_EH, function(x) is.element(hexidEH[i],x))))]) / length(ranks_geo_thermal_resourceEH[c(unlist(lapply(pres.list_NB_NH_EH, function(x) is.element(hexidEH[i],x))), unlist(lapply(pres.list_NB_SH_EH, function(x) is.element(hexidEH[i],x))))])
-}
-hex.weightBR <- c(hex.weight_BR_WH, hex.weight_BR_EH)
-hex.weightNB <- c(hex.weight_NB_WH, hex.weight_NB_EH)
-
-#Plot weighted richness
-jpeg("Figure3.jpg", width=1200, height=800, quality=100)
-par(mfrow=c(2,2), mar=c(0.1,0.1,1.4,0.1), mgp=c(1.5,0.5,0))
-rbPal <- colorRampPalette(c("yellow", "red3"))
-datcol <- rbPal(5)[as.numeric(cut(hex.weightBR, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
-datcol[which(is.na(datcol)==T)] <- "white"
-plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("A", cex=1.9, side=3, line=-2, at=-180)
-mtext("Breeding season", cex=1.5, side=3, line=0.15, at=0)
-legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Average rank\nof migrants", c("> 0.4","0.3–0.4", "0.2–0.3", "0.1–0.2", "0–0.1", "No species"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
-datcol <- rbPal(5)[as.numeric(cut(hex.weightNB, breaks=c(-0.1,0.1,0.2,0.3,0.4,1.1)))]
-datcol[which(is.na(datcol)==T)] <- "white"
-plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("B", cex=1.9, side=3, line=-2, at=-180)
-mtext("Non-breeding season", cex=1.5, side=3, line=0.15, at=0)
-
-#Plot observed richness in migrants
-PresAbs_BR_WH <- cbind(PresAbs_BR_NH_WH2, PresAbs_BR_SH_WH2)
-PresAbs_NB_WH <- cbind(PresAbs_NB_NH_WH2, PresAbs_NB_SH_WH2)
-PresAbs_BR_EH <- cbind(PresAbs_BR_NH_EH2, PresAbs_BR_SH_EH2)
-PresAbs_NB_EH <- cbind(PresAbs_NB_NH_EH2, PresAbs_NB_SH_EH2)
-mbr <- c(apply(PresAbs_BR_WH, 1, sum), apply(PresAbs_BR_EH, 1, sum))
-mnb <- c(apply(PresAbs_NB_WH, 1, sum), apply(PresAbs_NB_EH, 1, sum))
-rbPal <- colorRampPalette(c("yellow3", "dark green"))
-datcol <- rbPal(5)[as.numeric(cut(mbr, breaks=c(0.9,25,50,75,100,150)))]
-datcol[which(is.na(datcol)==T)] <- "white"
-plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("C", cex=1.9, side=3, line=-2, at=-180)
-legend("bottomleft", inset=.04, bg="grey", box.col="grey", title="Richness\nin migrants", c("> 100","75–100", "50–75", "25–50", "1–25", "0"), fill=c(rev(rbPal(5)),"white"), cex=1.5)
-datcol <- rbPal(5)[as.numeric(cut(mnb, breaks=c(0.9,25,50,75,100,150)))]
-datcol[which(is.na(datcol)==T)] <- "white"
-plot(hexgrid2, col=datcol, border=datcol, bg="grey")
-mtext("D", cex=1.9, side=3, line=-2, at=-180)
-dev.off()
-
-
-### Figure 4 - Weighted arrows maps  ###
-
-centroids.breeding.grounds <- rbind(centroids.breeding.groundsNH_WH, centroids.breeding.groundsNH_EH, centroids.breeding.groundsSH_WH, centroids.breeding.groundsSH_EH)
-centroids.nonbreeding.grounds <- rbind(centroids.nonbreeding.groundsNH_WH, centroids.nonbreeding.groundsNH_EH, centroids.nonbreeding.groundsSH_WH, centroids.nonbreeding.groundsSH_EH)
-#Split the species into 3 groups: good rank, intermerdiate rank and bad rank
-centroids.breeding.grounds_1 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource < 0.1),]
-centroids.nonbreeding.grounds_1 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource < 0.1),]
-centroids.breeding.grounds_2 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource >= 0.1 & ranks_geo_thermal_resource <= 0.5),]
-centroids.nonbreeding.grounds_2 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource >= 0.1 & ranks_geo_thermal_resource <= 0.5),]
-centroids.breeding.grounds_3 <- centroids.breeding.grounds[which(ranks_geo_thermal_resource > 0.5),]
-centroids.nonbreeding.grounds_3 <- centroids.nonbreeding.grounds[which(ranks_geo_thermal_resource > 0.5),]
-#Plot
-jpeg("Figure4.jpg", width=600, height=1000, quality=100)
-par(mfrow=c(3,1), mar=c(0.1,0.1,0.1,0.1), mgp=c(1.5,0.5,0))
-plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
-points(centroids.breeding.grounds_1, pch=20, col="red", cex=0.3)
-points(centroids.nonbreeding.grounds_1, pch=20, col="blue", cex=0.3)
-for(i in 1:length(centroids.breeding.grounds_1[,1])){
-	inter <- gcIntermediate(centroids.breeding.grounds_1[i,], centroids.nonbreeding.grounds_1[i,], n=50, addStartEnd=T)
-	lines(inter, lwd=1, col="yellow")
-}
-mtext("A", cex=1.9, side=3, line=-2.2, at=-180)
-mtext("Scaled rank < 0.1", cex=1.5, side=1, line=-2.2, at=25)
-plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
-points(centroids.breeding.grounds_2, pch=20, col="red", cex=0.3)
-points(centroids.nonbreeding.grounds_2, pch=20, col="blue", cex=0.3)
-for(i in 1:length(centroids.breeding.grounds_2[,1])){
-	inter <- gcIntermediate(centroids.breeding.grounds_2[i,], centroids.nonbreeding.grounds_2[i,], n=50, addStartEnd=T)
-	lines(inter, lwd=1, col="orange")
-}
-mtext("B", cex=1.9, side=3, line=-2.2, at=-180)
-mtext("0.1 <= Scaled rank <= 0.5", cex=1.5, side=1, line=-2.2, at=25)
-plot(hexgrid2, col= "dark grey", border = "dark grey", bg="light grey")
-points(centroids.breeding.grounds_3, pch=20, col="red", cex=0.3)
-points(centroids.nonbreeding.grounds_3, pch=20, col="blue", cex=0.3)
-for(i in 1:length(centroids.breeding.grounds_3[,1])){
-	inter <- gcIntermediate(centroids.breeding.grounds_3[i,], centroids.nonbreeding.grounds_3[i,], n=50, addStartEnd=T)
-	lines(inter, lwd=1, col="brown4")
-}
-mtext("C", cex=1.9, side=3, line=-2.2, at=-180)
-mtext("Scaled rank > 0.5", cex=1.5, side=1, line=-2.2, at=25)
-dev.off()
-
-
-#Export excel table for appendix of publication
-species.names <- c(names(PresAbs_BR_NH_WH2), names(PresAbs_BR_NH_EH2), names(PresAbs_BR_SH_WH2), names(PresAbs_BR_SH_EH2))
-longitudinal.hemisphere <- c(rep("WH", length(PresAbs_BR_NH_WH2[1,])), rep("EH", length(PresAbs_BR_NH_EH2[1,])), rep("WH", length(PresAbs_BR_SH_WH2[1,])), rep("EH", length(PresAbs_BR_SH_EH2[1,])))
-xlsTable <- cbind(species.names, longitudinal.hemisphere, geo.distances.obs, thermal.distances.obs, habitat.distances.obs, resource.scarcity.obs, ranks_geo, ranks_thermal, ranks_habitat, ranks_resource, ranks_geo_thermal, ranks_geo_habitat, ranks_geo_resource, ranks_thermal_habitat, ranks_thermal_resource, ranks_habitat_resource, ranks_geo_thermal_habitat, ranks_geo_thermal_resource, ranks_geo_habitat_resource, ranks_thermal_habitat_resource, ranks_geo_thermal_habitat_resource)
-colnames(xlsTable) <- c("species name", "Longitudinal hemisphere", "Geographical distance", "Thermal distance", "Habitat distance", "Resource scarcity", "Scaled rank geo distance", "Scaled rank thermal distance", "Scaled rank habitat distance", "Scaled rank resource scarcity", "Scaled rank geo distance + thermal distance", "Scaled rank geo distance + habitat distance", "Scaled rank geo distance + resource scarcity", "Scaled rank thermal distance + habitat distance", "Scaled rank thermal distance + resource scarcity", "Scaled rank habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance", "Scaled rank geo distance + thermal distance + resource scarcity", "Scaled rank geo distance + habitat distance + resource scarcity", "Scaled rank thermal distance + habitat distance + resource scarcity", "Scaled rank geo distance + thermal distance + habitat distance + resource scarcity")
-xlsTable <- xlsTable[order(species.names),]
-write.csv(xlsTable, "Appendix1.csv")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Migration bearing
-
-bearings_obs_NH_WH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsNH_WH[,1])){
-	bearings_obs_NH_WH[i] <- bearingRhumb(centroids.nonbreeding.groundsNH_WH[i,], centroids.breeding.groundsNH_WH[i,])
-}
-bearings_obs_NH_EH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsNH_EH[,1])){
-	bearings_obs_NH_EH[i] <- bearingRhumb(centroids.nonbreeding.groundsNH_EH[i,], centroids.breeding.groundsNH_EH[i,])
-}
-bearings_obs_SH_WH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsSH_WH[,1])){
-	bearings_obs_SH_WH[i] <- bearingRhumb(centroids.nonbreeding.groundsSH_WH[i,], centroids.breeding.groundsSH_WH[i,])
-}
-bearings_obs_SH_EH <- vector()
-for(i in 1:length(centroids.nonbreeding.groundsSH_EH[,1])){
-	bearings_obs_SH_EH[i] <- bearingRhumb(centroids.nonbreeding.groundsSH_EH[i,], centroids.breeding.groundsSH_EH[i,])
-}
-bearings_obs_WH <- c(bearings_obs_NH_WH, bearings_obs_SH_WH)
-bearings_obs_EH <- c(bearings_obs_NH_EH, bearings_obs_SH_EH)
-bearings_obs <- c(bearings_obs_NH_WH, bearings_obs_NH_EH, bearings_obs_SH_WH, bearings_obs_SH_EH)
-
-
-
-bearings_sim_NH_WH_nbsim <- list()
-bearings_sim_NH_WH_brsim <- list()
-for(i in 1:length(centroids.breeding.groundsNH_WH[,1])){
-	nbsim <- vector()
-	brsim <- vector()
-	for(j in 1:100){
-		nbsim[j] <- bearingRhumb(centroids.simulatedNB_NH_WH[[i]][[j]], centroids.breeding.groundsNH_WH[i,])
-		bearings_sim_NH_WH_nbsim[[i]] <- nbsim
-	}
-	for(j in 1:100){
-		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsNH_WH[i,], centroids.simulatedBR_NH_WH[[i]][[j]])
-		bearings_sim_NH_WH_brsim[[i]] <- brsim
-	}
-}
-bearings_sim_NH_EH_nbsim <- list()
-bearings_sim_NH_EH_brsim <- list()
-for(i in 1:length(centroids.breeding.groundsNH_EH[,1])){
-	nbsim <- vector()
-	brsim <- vector()
-	for(j in 1:100){
-		nbsim[j] <- bearingRhumb(centroids.simulatedNB_NH_EH[[i]][[j]], centroids.breeding.groundsNH_EH[i,])
-		bearings_sim_NH_EH_nbsim[[i]] <- nbsim
-	}
-	for(j in 1:100){
-		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsNH_EH[i,], centroids.simulatedBR_NH_EH[[i]][[j]])
-		bearings_sim_NH_EH_brsim[[i]] <- brsim
-	}
-}
-bearings_sim_SH_WH_nbsim <- list()
-bearings_sim_SH_WH_brsim <- list()
-for(i in 1:length(centroids.breeding.groundsSH_WH[,1])){
-	nbsim <- vector()
-	brsim <- vector()
-	for(j in 1:100){
-		nbsim[j] <- bearingRhumb(centroids.simulatedNB_SH_WH[[i]][[j]], centroids.breeding.groundsSH_WH[i,])
-		bearings_sim_SH_WH_nbsim[[i]] <- nbsim
-	}
-	for(j in 1:100){
-		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsSH_WH[i,], centroids.simulatedBR_SH_WH[[i]][[j]])
-		bearings_sim_SH_WH_brsim[[i]] <- brsim
-	}
-}
-bearings_sim_SH_EH_nbsim <- list()
-bearings_sim_SH_EH_brsim <- list()
-for(i in 1:length(centroids.breeding.groundsSH_EH[,1])){
-	nbsim <- vector()
-	brsim <- vector()
-	for(j in 1:100){
-		nbsim[j] <- bearingRhumb(centroids.simulatedNB_SH_EH[[i]][[j]], centroids.breeding.groundsSH_EH[i,])
-		bearings_sim_SH_EH_nbsim[[i]] <- nbsim
-	}
-	for(j in 1:100){
-		brsim[j] <- bearingRhumb(centroids.nonbreeding.groundsSH_EH[i,], centroids.simulatedBR_SH_EH[[i]][[j]])
-		bearings_sim_SH_EH_brsim[[i]] <- brsim
-	}
-}
-
-bearings_sim_nbsim_WH <- c(bearings_sim_NH_WH_nbsim, bearings_sim_SH_WH_nbsim)
-bearings_sim_nbsim_EH <- c(bearings_sim_NH_EH_nbsim, bearings_sim_SH_EH_nbsim)
-bearings_sim_brsim_WH <- c(bearings_sim_NH_WH_brsim, bearings_sim_SH_WH_brsim)
-bearings_sim_brsim_EH <- c(bearings_sim_NH_EH_brsim, bearings_sim_SH_EH_brsim)
-bearings_sim_nbsim <- c(bearings_sim_NH_WH_nbsim, bearings_sim_NH_EH_nbsim, bearings_sim_SH_WH_nbsim, bearings_sim_SH_EH_nbsim)
-bearings_sim_brsim <- c(bearings_sim_NH_WH_brsim, bearings_sim_NH_EH_brsim, bearings_sim_SH_WH_brsim, bearings_sim_SH_EH_brsim)
-
-
-bearing_nbsim_best_simu_diff <- list()
-bearing_brsim_best_simu_diff <- list()
-for(i in 1:length(bearings_obs)){
-	bearing_nbsim_best_simu_diff[[i]] <- bearings_sim_nbsim[[i]] - bearings_obs[i]
-	bearing_brsim_best_simu_diff[[i]] <- bearings_sim_brsim[[i]] - bearings_obs[i]
-}
-bearing_nbsim_best_simu_diff_WH <- list()
-bearing_brsim_best_simu_diff_WH <- list()
-for(i in 1:length(bearings_obs_WH)){
-	bearing_nbsim_best_simu_diff_WH[[i]] <- bearings_sim_nbsim_WH[[i]] - bearings_obs_WH[i]
-	bearing_brsim_best_simu_diff_WH[[i]] <- bearings_sim_brsim_WH[[i]] - bearings_obs_WH[i]
-}
-bearing_nbsim_best_simu_diff_EH <- list()
-bearing_brsim_best_simu_diff_EH <- list()
-for(i in 1:length(bearings_obs_EH)){
-	bearing_nbsim_best_simu_diff_EH[[i]] <- bearings_sim_nbsim_EH[[i]] - bearings_obs_EH[i]
-	bearing_brsim_best_simu_diff_EH[[i]] <- bearings_sim_brsim_EH[[i]] - bearings_obs_EH[i]
-}
-
-
-
-
-bearing_nbsim_best_simu_diff_sel <- list()
-bearing_brsim_best_simu_diff_sel <- list()
-for(i in 1:length(geo_best_simu_nbsim)){
-	bearing_nbsim_best_simu_diff_sel[[i]] <- bearing_nbsim_best_simu_diff[[i]][geo_best_simu_nbsim[[i]]]
-	bearing_brsim_best_simu_diff_sel[[i]] <- bearing_brsim_best_simu_diff[[i]][geo_best_simu_brsim[[i]]]
-}
-
-
-bearing_nbsim_best_simu_diff_mean <- unlist(lapply(bearing_nbsim_best_simu_diff_sel, mean))
-bearing_nbsim_best_simu_diff_mean <- ifelse(bearing_nbsim_best_simu_diff_mean > 180, bearing_nbsim_best_simu_diff_mean-360, bearing_nbsim_best_simu_diff_mean)
-bearing_nbsim_best_simu_diff_mean <- ifelse(bearing_nbsim_best_simu_diff_mean < (-180), bearing_nbsim_best_simu_diff_mean+360, bearing_nbsim_best_simu_diff_mean)
-
-bearing_brsim_best_simu_diff_mean <- unlist(lapply(bearing_brsim_best_simu_diff_sel, mean))
-bearing_brsim_best_simu_diff_mean <- ifelse(bearing_brsim_best_simu_diff_mean > 180, bearing_brsim_best_simu_diff_mean-360, bearing_brsim_best_simu_diff_mean)
-bearing_brsim_best_simu_diff_mean <- ifelse(bearing_brsim_best_simu_diff_mean < (-180), bearing_brsim_best_simu_diff_mean+360, bearing_brsim_best_simu_diff_mean)
-
-
-
-bearing_nbsim_best_simu_diff_mean_WH <- unlist(lapply(bearing_nbsim_best_simu_diff_WH, mean))
-bearing_nbsim_best_simu_diff_mean_WH <- ifelse(bearing_nbsim_best_simu_diff_mean_WH > 180, bearing_nbsim_best_simu_diff_mean_WH-360, bearing_nbsim_best_simu_diff_mean_WH)
-bearing_nbsim_best_simu_diff_mean_WH <- ifelse(bearing_nbsim_best_simu_diff_mean_WH < (-180), bearing_nbsim_best_simu_diff_mean_WH+360, bearing_nbsim_best_simu_diff_mean_WH)
-bearing_nbsim_best_simu_diff_mean_EH <- unlist(lapply(bearing_nbsim_best_simu_diff_EH, mean))
-bearing_nbsim_best_simu_diff_mean_EH <- ifelse(bearing_nbsim_best_simu_diff_mean_EH > 180, bearing_nbsim_best_simu_diff_mean_EH-360, bearing_nbsim_best_simu_diff_mean_EH)
-bearing_nbsim_best_simu_diff_mean_EH <- ifelse(bearing_nbsim_best_simu_diff_mean_EH < (-180), bearing_nbsim_best_simu_diff_mean_EH+360, bearing_nbsim_best_simu_diff_mean_EH)
-
-bearing_brsim_best_simu_diff_mean_WH <- unlist(lapply(bearing_brsim_best_simu_diff_WH, mean))
-bearing_brsim_best_simu_diff_mean_WH <- ifelse(bearing_brsim_best_simu_diff_mean_WH > 180, bearing_brsim_best_simu_diff_mean_WH-360, bearing_brsim_best_simu_diff_mean_WH)
-bearing_brsim_best_simu_diff_mean_WH <- ifelse(bearing_brsim_best_simu_diff_mean_WH < (-180), bearing_brsim_best_simu_diff_mean_WH+360, bearing_brsim_best_simu_diff_mean_WH)
-bearing_brsim_best_simu_diff_mean_EH <- unlist(lapply(bearing_brsim_best_simu_diff_EH, mean))
-bearing_brsim_best_simu_diff_mean_EH <- ifelse(bearing_brsim_best_simu_diff_mean_EH > 180, bearing_brsim_best_simu_diff_mean_EH-360, bearing_brsim_best_simu_diff_mean_EH)
-bearing_brsim_best_simu_diff_mean_EH <- ifelse(bearing_brsim_best_simu_diff_mean_EH < (-180), bearing_brsim_best_simu_diff_mean_EH+360, bearing_brsim_best_simu_diff_mean_EH)
 
 

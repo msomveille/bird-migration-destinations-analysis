@@ -1,3 +1,188 @@
+exp(-1-2)
+x = seq(0,1,0.1)
+y = exp(-x*5)
+plot(y,y)
+plot(x,y)
+23*13
+250 + 370 + 150 + 70
+150 + 150 + 150
+hexGridPoints <- read.csv("/Users/mariussomveille/Desktop/Hex_grid/isea3h6/isea3h6.csv")
+hexGridPoints <- read.csv("/Users/mariussomveille/Desktop/Yale-MPIO/isea3h6/isea3h6.csv")
+dim(hexGridPoints)
+## Read the point coordinates (downloaded from internet)#
+#
+id=1#
+for(i in 1:dim(hexGridPoints)[1]){#
+	if(is.na(hexGridPoints[i,1]==T)){#
+		hexGridPoints = hexGridPoints[-i,]#
+		id=id+1#
+		hexGridPoints[i,3] = id#
+	}else{#
+		hexGridPoints[i,3] = id#
+	}#
+}#
+hexGridPoints[,4] <- 1:196834#
+hexGridPoints <- hexGridPoints[which(hexGridPoints[,4] <= 189543),]#
+hexGridPoints <- hexGridPoints[,1:3]#
+colnames(hexGridPoints) <- c("Long", "Lat", "hexID")
+library(devtools)
+install.packages('devtools')
+library(devtools)
+install_github('r-barnes/dggridR', vignette=TRUE)
+require(devtools)
+install_github('andreacirilloac/updateR')
+updateR(admin_password = "Cambridge2014")
+library(updateR)
+updateR(admin_password = "Cambridge2014")
+library(dggridR)
+hexgrid <- dgconstruct(projection="ISEA", topology="HEXAGON", res=7, metric=T)
+hexgrid_center <- dgSEQNUM_to_GEO(hexgrid, 1:21872)
+hexgrid_centroids <- cbind(hexgrid_center$lon_deg, hexgrid_center$lat_deg)
+hexgrid_NorthAmerica <- dgcellstogrid(hexgrid, which(hexgrid_center$lon_deg <= -30 & hexgrid_center$lat_deg > 20), frame=F,wrapcells=TRUE)
+plot(hexgrid_NorthAmerica)
+hex_neighbours <- gTouches(hexgrid_NorthAmerica, byid=T)
+library(igraph)
+hex_neighbours <- gTouches(hexgrid_NorthAmerica, byid=T)
+library(gdistance)
+hex_neighbours <- gTouches(hexgrid_NorthAmerica, byid=T)
+library(rgeos)
+hex_neighbours <- gTouches(hexgrid_NorthAmerica, byid=T)
+dim(hex_neighbours)
+hex_neighbours[1:10,1:10]
+sum(hex_neighbours)
+sum(hex_neighbours[1,])
+sum(hex_neighbours[10,])
+sum(hex_neighbours[100,])
+hex_neighbours_list <- list(apply(hex_neighbours, 1, function(x) which(x==TRUE)))
+dim(hex_neighbours_list)
+length(hex_neighbours_list)
+hex_neighbours_list <- as.list(apply(hex_neighbours, 1, function(x) which(x==TRUE)))
+length(hex_neighbours_list)
+head(hex_neighbours_list <- as.list(apply(hex_neighbours, 1, function(x) which(x==TRUE))))
+hex_neighbours_list[[1]]
+hex_neighbours_list[[2]]
+i=1
+c(hexgrid_center$lon_deg[i], hexgrid_center$lat_deg[i])
+c(hexgrid_center$lon_deg[hex_neighbours_list[i]], hexgrid_center$lat_deg[hex_neighbours_list[i]])
+hex_neighbours_list[i]
+hexgrid_center$lon_deg[hex_neighbours_list[i]]
+hexgrid_center$lon_deg[hex_neighbours_list[[i]]]
+cbind(hexgrid_center$lon_deg[hex_neighbours_list[[i]]], hexgrid_center$lat_deg[hex_neighbours_list[[i]]])
+bearingRhumb(c(hexgrid_center$lon_deg[i], hexgrid_center$lat_deg[i]), cbind(hexgrid_center$lon_deg[hex_neighbours_list[[i]]], hexgrid_center$lat_deg[hex_neighbours_list[[i]]]))
+library(geosphere)
+bearingRhumb(c(hexgrid_center$lon_deg[i], hexgrid_center$lat_deg[i]), cbind(hexgrid_center$lon_deg[hex_neighbours_list[[i]]], hexgrid_center$lat_deg[hex_neighbours_list[[i]]]))
+hex_bearings <- list()#
+for(i in 1:hex_neighbours_list){#
+	hex_bearings[[i]] <- bearingRhumb(c(hexgrid_center$lon_deg[i], hexgrid_center$lat_deg[i]), cbind(hexgrid_center$lon_deg[hex_neighbours_list[[i]]], hexgrid_center$lat_deg[hex_neighbours_list[[i]]]))#
+}
+hex_bearings <- list()#
+for(i in 1:10){#
+	hex_bearings[[i]] <- bearingRhumb(c(hexgrid_center$lon_deg[i], hexgrid_center$lat_deg[i]), cbind(hexgrid_center$lon_deg[hex_neighbours_list[[i]]], hexgrid_center$lat_deg[hex_neighbours_list[[i]]]))#
+}
+hex_bearings
+?getdata
+library(raster)
+Temp_summer <- getdata("worldclim", var="tmin", res=5)
+library(raster)
+Temp_summer <- getData("worldclim", var="tmin", res=5)
+dim(Temp_summer)
+plot(Temp_summer[[1]])
+plot(Temp_summer[[6]])
+?rdist
+8.71 / 5
+(1+2.24+4)/3
+28.71 / 10
+Me = 10
+M = 50
+6.7*(Me^0.6452) / 6.7*(M^0.6452)
+10/50
+(Me^0.6452) / (M^0.6452)
+(10^0.6452) / (50^0.6452)
+(6.7*(Me^0.6452)) / (6.7*(M^0.6452))
+body.sizes <- read.csv("~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/Body_size_birds.csv")
+dim(body.sizes)
+hist(body.sizes)
+hist(body.sizes[,1])
+sample(body.sizes[,1], 1)
+data.sibly <- read.csv("~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/dataSibly.csv")
+dim(data.sibly)
+head(data.sibly)
+plot(data.sibly$log10.mass, data.sibly$log10.productivity, pch=20)
+plot(10^data.sibly$log10.mass, 10^data.sibly$log10.productivity, pch=20)
+10^(log(8,base=10))
+10^(log(10,base=10))
+hist(10^data.sibly$log10.productivity)
+productivity.nomass <- (10^data.sibly$log10.productivity) * (10^data.sibly$log10.mass)
+hist(productivity.nomass)
+plot(data.sibly$log10.mass, log(productivity.nomass,base=10), pch=20)
+summary(lm(log(productivity.nomass,base=10) ~ data.sibly$log10.mass))
+10^(0.367)
+Me
+Me = 0.367 + 0.6231*log(M, base=10)
+Me
+M
+Me = 10^(0.367 + 0.6231*log(M, base=10))
+Me
+Me = 2.328 *(M^0.6231)
+Me
+2.328^0.6452
+Me = ((2.328*(M^0.64))^0.64) / (M^0.64)
+Me
+M
+Me = 1.725 * (M^0.64)
+Me
+((2.328*(M^0.64))^0.64)
+1.725*(M^(2*0.64))
+1.725*((M^0.64)^0.64)
+0.64*0.64
+0.6452 * 0.6231
+0.4020 - 0.6452
+Me = 1.725 * (M^(-0.2432))
+Mé
+Me
+Me = ((2.328*(M^0.6231))^0.6452) / (M^0.6452)
+Me
+body.sizes <- read.csv("~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/Body_size_birds.csv")
+body.sizes <- read.csv("~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/Body_size_birds.csv")[,1]
+classt(body.sizes)
+class(body.sizes)
+body.sizes
+body.sizes = body.sizes[-which(is.na(body.sizes)==T)]
+length(body.sizes)
+head(body.sizes)
+write.csv("~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/Body_size_birds2.csv")
+write.csv(body.sizes, "~/Desktop/PhD/Chapter 4 – mechanistic model/Loading-data/Body_size_birds2.csv")
+head(body.sizes)
+6.45e-5
+6.45e-5 - 0.000645
+6.45e-5 - 0.00645
+6.45*(10^-5)
+(6.45*(10^-5)) / 0.0000645
+2*(-77.232739 - -100.446938)
+?lrtest
+library(lmtest)
+?lrtest
+AIC_indep = (2*4- - (2*log(-100.446938))
+AIC_indep = (2*4)- - (2*log(-100.446938))
+AIC_indep = (2*4)- - (2*ln(-100.446938))
+log(-1)
+AIC_indep = (2*4)- - (2*l-100.446938)
+AIC_indep = (2*4)- - (2*-100.446938)
+AIC_indep
+AIC_dep = (2*8)- - (2*-77.232739)
+AIC_dep
+2*(-77.232739 - -100.446938)
+2*(-102 - -114)
+AIC_indep = (2*4)- - (2*-114)
+AIC_dep = (2*4)- - (2*-102)
+AIC_indep
+AIC_dep
+AIC_indep = (2*4)- - (2*-101)
+AIC_indep
+AIC_indep = (2*4)- - (2*-79)
+AIC_indep = (2*4)- - (2*-101)
+AIC_dep = (2*4)- - (2*-79)
+AIC_dep
 library(geosphere)#
 library(fields)#
 library(MASS)#
@@ -5,69 +190,93 @@ library(raster)#
 library(move)#
 library(vioplot)#
 library(igraph)
-setwd("/Users/mariussomveille/Desktop/PhD/Chapter 3 – niche/Submission process/Ecography/analysis-migration-strategies/Data")
-PresAbs_BR_NH <- read.table("PresAbs_BR_NH.txt", header=T)  # Breeding range of species breeding during the northern summer#
-PresAbs_NB_NH <- read.table("PresAbs_NB_NH.txt", header=T)  # Non-breeding range of species breeding during the northern summer#
-PresAbs_BR_SH <- read.table("PresAbs_BR_SH.txt", header=T)  # Breeding range of species breeding during the northern winter#
-PresAbs_NB_SH <- read.table("PresAbs_NB_SH.txt", header=T)  # Non-breeding range of species breeding during the northern winter#
-#
-#Remove species that do not have at least 50% of either their breeding or non-breeding range on land#
+setwd("/Users/mariussomveille/Desktop/PhD/Chapter 3 – niche/Submission process/Ecography/bird-migration-destinations-analysis/Data")
+PresAbs_BR_NH <- read.table("PresAbs_BR_NH.txt", header=T)  # Breeding range of species that breed during the northern summer#
+PresAbs_NB_NH <- read.table("PresAbs_NB_NH.txt", header=T)  # Non-breeding range of species that breed during the northern summer#
+PresAbs_BR_SH <- read.table("PresAbs_BR_SH.txt", header=T)  # Breeding range of species that breed during the northern winter#
+PresAbs_NB_SH <- read.table("PresAbs_NB_SH.txt", header=T)  # Non-breeding range of species that breed during the northern winter#
+PresAbs_residents <- read.table("PresAbs_res.txt", header=T)  # Range of reseident species
 sppinfo <- read.csv("List_species_both&coastal.csv", sep=";", header=T)#
 PresAbs_BR_NH <- PresAbs_BR_NH[,-match(c(as.character(sppinfo$CoastalBothBoth),as.character(sppinfo$CoastalNHEH),as.character(sppinfo$CoastalNHWH),as.character(sppinfo$CoastalBothEH)), colnames(PresAbs_BR_NH), nomatch=0)]#
 PresAbs_NB_NH <- PresAbs_NB_NH[,-match(c(as.character(sppinfo$CoastalBothBoth),as.character(sppinfo$CoastalNHEH),as.character(sppinfo$CoastalNHWH),as.character(sppinfo$CoastalBothEH)), colnames(PresAbs_NB_NH), nomatch=0)]#
 PresAbs_BR_SH <- PresAbs_BR_SH[,-match(c(as.character(sppinfo$CoastalSHEH),as.character(sppinfo$CoastalSHWH)), colnames(PresAbs_BR_SH), nomatch=0)]#
-PresAbs_NB_SH <- PresAbs_NB_SH[,-match(c(as.character(sppinfo$CoastalSHEH),as.character(sppinfo$CoastalSHWH)), colnames(PresAbs_NB_SH), nomatch=0)]#
-#Environmental data#
-envData <- read.csv("Env_data.csv")#
-envData2 <- envData[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]#
-PrecNS <- log(envData2$Prec_NS+1)#
-PrecNW <- log(envData2$Prec_NW+1)#
-TempNS <- envData2$Tmean_NS/10#
-TempNW <- envData2$Tmean_NW/10#
-NDVI_NS <- ((envData2$NDVI_may + envData2$NDVI_jun + envData2$NDVI_jul + envData2$NDVI_aug)/4) * 100#
-NDVI_NW <- ((envData2$NDVI_nov + envData2$NDVI_dec + envData2$NDVI_jan + envData2$NDVI_feb)/4) * 100#
+PresAbs_NB_SH <- PresAbs_NB_SH[,-match(c(as.character(sppinfo$CoastalSHEH),as.character(sppinfo$CoastalSHWH)), colnames(PresAbs_NB_SH), nomatch=0)]
+hexgrid <- readOGR("Hex_grid", "isea3h7_analyses_clean", verbose=FALSE)
+library(maptools)
+hexgrid <- readOGR("Hex_grid", "isea3h7_analyses_clean", verbose=FALSE)
+library(rgdal)
+hexgrid <- readOGR("Hex_grid", "isea3h7_analyses_clean", verbose=FALSE)
+hexgrid <- readOGR("/Users/mariussomveille/Desktop/PhD/Chapter 3 – niche/Submission process/Ecography/Data/Hex_grid", "isea3h7_analyses_clean", verbose=FALSE)
+head(hexgrid)
+hexgrid <- hexgrid[,c(1,2,15,16)]
+head(hexgrid)
+? writeOGR
+ogrDrivers()
+writeOGR(hexgrid, driver="ESRI Shapefile")
+writeOGR(hexgrid, dsn="Hex_grid", driver="ESRI Shapefile")
+writeOGR(hexgrid, dsn="Hex_grid", layer="ISEA7_hexgrid", driver="ESRI Shapefile")
+hexgrid <- readOGR("Hex_grid", "isea3h7_hexgrid", verbose=FALSE)
+writeOGR(hexgrid, dsn="Hex_grid", layer="isea3h7_hexgrid", driver="ESRI Shapefile")
+hexgrid <- readOGR("Hex_grid", "isea3h7_hexgrid", verbose=FALSE)
+dim(hexgrid)
+head(hexgrid)
+hexgridWH <- hexgrid[which(hexgrid@data[,4] <= -30),]#
+hexgridEH <- hexgrid[which(hexgrid@data[,4] > -30),]
+envData <- read.csv("Env_data.csv")
+envData2 <- envData[-which((envData$Tmean_NW=="#DIV/0!" | envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]
+dim(envData2)
+head(envData)
+hexidWH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_BR_NH[,1]),1]#
+hexidEH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),1]
+TempMeanNS <- as.numeric(as.vector(envData2$Tmean_NS))		# Mean temperature during the northern summer#
+TempMeanNW <- as.numeric(as.vector(envData2$Tmean_NW))		# Mean temperature during the northern winter#
+TempMinNS <- envData2$Tmin_NS								# Minimum temperature during the northern summer#
+TempMinNW <- envData2$Tmin_NW								# Minimum temperature during the northern winter#
+NDVI_NS <- ((envData2$NDVI_may + envData2$NDVI_jun + envData2$NDVI_jul + envData2$NDVI_aug)/4) * 100		# NDVI during the northern summer#
 NDVI_NS[NDVI_NS<1] <- 1#
+NDVI_NW <- ((envData2$NDVI_nov + envData2$NDVI_dec + envData2$NDVI_jan + envData2$NDVI_feb)/4) * 100		# NDVI during the northern winter#
 NDVI_NW[NDVI_NW<1] <- 1#
-#z-tranform climate data to make axes comparable#
-sdTemp <- sd(c(TempNS,TempNW))#
-mnTemp <- mean(c(TempNS,TempNW))#
-sdPrec <- sd(c(PrecNS,PrecNW))#
-mnPrec <- mean(c(PrecNS,PrecNW))#
-TempNS <- (TempNS - mnTemp) / sdTemp#
-TempNW <- (TempNW - mnTemp) / sdTemp#
-PrecNS <- (PrecNS - mnPrec) / sdPrec#
-PrecNW <- (PrecNW - mnPrec) / sdPrec#
-#Split environmental data into western hemisphere (WH) and eastern hemisphere (EH)#
-TempNS_WH <- TempNS[which(envData2$LONGITUDE<=-30)]#
-TempNW_WH <- TempNW[which(envData2$LONGITUDE<=-30)]#
-PrecNS_WH <- PrecNS[which(envData2$LONGITUDE<=-30)]#
-PrecNW_WH <- PrecNW[which(envData2$LONGITUDE<=-30)]#
+habitat <- envData2$habitatCoverage
+hexgrid2 <- rbind(hexgridWH[match(hexidWH, hexgridWH@data[,1]),], hexgridEH[match(hexidEH, hexgridEH@data[,1]),])
+dim(# Mean temperature during the northern summer)
+dim(hexgrid2)
+head(hexgrid2)
+## z-tranformation of climate data#
+#
+sdTempMean <- sd(c(TempMeanNS,TempMeanNW))#
+mnTempMean <- mean(c(TempMeanNS,TempMeanNW))#
+sdTempMin <- sd(c(TempMinNS,TempMinNW))#
+mnTempMin <- mean(c(TempMinNS,TempMinNW))#
+TempMeanNS <- (TempMeanNS - mnTempMean) / sdTempMean#
+TempMeanNW <- (TempMeanNW - mnTempMean) / sdTempMean#
+TempMinNS <- (TempMinNS - mnTempMin) / sdTempMin#
+TempMinNW <- (TempMinNW - mnTempMin) / sdTempMin
+TempMeanNS_WH <- TempMeanNS[which(envData2$LONGITUDE<=-30)]#
+TempMeanNW_WH <- TempMeanNW[which(envData2$LONGITUDE<=-30)]#
+TempMinNS_WH <- TempMinNS[which(envData2$LONGITUDE<=-30)]#
+TempMinNW_WH <- TempMinNW[which(envData2$LONGITUDE<=-30)]#
 NDVI_NS_WH <- NDVI_NS[which(envData2$LONGITUDE<=-30)]#
 NDVI_NW_WH <- NDVI_NW[which(envData2$LONGITUDE<=-30)]#
 resourceGain_NS_WH <- NDVI_NS_WH - NDVI_NW_WH#
 resourceGain_NW_WH <- NDVI_NW_WH - NDVI_NS_WH#
 resourceScarcity_NS_WH <- -resourceGain_NS_WH#
 resourceScarcity_NW_WH <- -resourceGain_NW_WH#
-TempNS_EH <- TempNS[which(envData2$LONGITUDE>-30)]#
-TempNW_EH <- TempNW[which(envData2$LONGITUDE>-30)]#
-PrecNS_EH <- PrecNS[which(envData2$LONGITUDE>-30)]#
-PrecNW_EH <- PrecNW[which(envData2$LONGITUDE>-30)]#
+habitat_WH <- habitat[which(envData2$LONGITUDE<=-30)]#
+TempMeanNS_EH <- TempMeanNS[which(envData2$LONGITUDE>-30)]#
+TempMeanNW_EH <- TempMeanNW[which(envData2$LONGITUDE>-30)]#
+TempMinNS_EH <- TempMinNS[which(envData2$LONGITUDE>-30)]#
+TempMinNW_EH <- TempMinNW[which(envData2$LONGITUDE>-30)]#
 NDVI_NS_EH <- NDVI_NS[which(envData2$LONGITUDE>-30)]#
 NDVI_NW_EH <- NDVI_NW[which(envData2$LONGITUDE>-30)]#
 resourceGain_NS_EH <- NDVI_NS_EH - NDVI_NW_EH#
 resourceGain_NW_EH <- NDVI_NW_EH - NDVI_NS_EH#
 resourceScarcity_NS_EH <- -resourceGain_NS_EH#
 resourceScarcity_NW_EH <- -resourceGain_NW_EH#
-#Geographic coordinates#
-lonlat <- cbind(envData2$LONGITUDE, envData2$LATITUDE)#
-colnames(lonlat) <- c("LONGITUDE", "LATITUDE")#
-west_Hem <- lonlat[which(lonlat[,1]<=-30),]  # subset for Western Hemisphere#
-east_Hem <- lonlat[which(lonlat[,1]>-30),]   # subset for Eastern Hemisphere#
-#Clean presence-absence data#
-PresAbs_BR_NH <- PresAbs_BR_NH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]#
-PresAbs_NB_NH <- PresAbs_NB_NH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]#
-PresAbs_BR_SH <- PresAbs_BR_SH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]#
-PresAbs_NB_SH <- PresAbs_NB_SH[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]#
+habitat_EH <- habitat[which(envData2$LONGITUDE>-30)]
+PresAbs_BR_NH <- PresAbs_BR_NH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]#
+PresAbs_NB_NH <- PresAbs_NB_NH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]#
+PresAbs_BR_SH <- PresAbs_BR_SH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]#
+PresAbs_NB_SH <- PresAbs_NB_SH[-which((envData$Tmean_NW=="#DIV/0!" & envData$Tmean_NS=="#DIV/0!") | is.na(envData$habitatCoverage) == T),]#
 #
 PresAbs_BR_NH_EH <- PresAbs_BR_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_NH[,1]),]#
 PresAbs_NB_NH_EH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_NH[,1]),]#
@@ -77,19 +286,17 @@ PresAbs_NB_NH_WH <- PresAbs_NB_NH[match(envData2[which(envData2$LONGITUDE<=-30),
 PresAbs_BR_SH_EH <- PresAbs_BR_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_BR_SH[,1]),]#
 PresAbs_NB_SH_EH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE>-30),1], PresAbs_NB_SH[,1]),]#
 PresAbs_BR_SH_WH <- PresAbs_BR_SH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_BR_SH[,1]),]#
-PresAbs_NB_SH_WH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_NB_SH[,1]),]#
-#Computing range size#
-rangeSize_migra_BR_NH_WH <- apply(PresAbs_BR_NH_WH[,-1], 2, sum)#
-rangeSize_migra_BR_SH_WH <- apply(PresAbs_BR_SH_WH[,-1], 2, sum)#
-rangeSize_migra_NB_NH_WH <- apply(PresAbs_NB_NH_WH[,-1], 2, sum)#
-rangeSize_migra_NB_SH_WH <- apply(PresAbs_NB_SH_WH[,-1], 2, sum)#
-rangeSize_migra_BR_NH_EH <- apply(PresAbs_BR_NH_EH[,-1], 2, sum)#
-rangeSize_migra_BR_SH_EH <- apply(PresAbs_BR_SH_EH[,-1], 2, sum)#
-rangeSize_migra_NB_NH_EH <- apply(PresAbs_NB_NH_EH[,-1], 2, sum)#
-rangeSize_migra_NB_SH_EH <- apply(PresAbs_NB_SH_EH[,-1], 2, sum)#
-rangeSizes_WH <- c(rangeSize_migra_BR_NH_WH, rangeSize_migra_BR_SH_WH, rangeSize_migra_NB_NH_WH, rangeSize_migra_NB_SH_WH)#
-rangeSizes_EH <- c(rangeSize_migra_BR_NH_EH, rangeSize_migra_BR_SH_EH, rangeSize_migra_NB_NH_EH, rangeSize_migra_NB_SH_EH)#
-#Computing range overlap#
+PresAbs_NB_SH_WH <- PresAbs_NB_SH[match(envData2[which(envData2$LONGITUDE<=-30),1], PresAbs_NB_SH[,1]),]
+rangeSize_BR_NH_WH <- apply(PresAbs_BR_NH_WH[,-1], 2, sum)#
+rangeSize_BR_SH_WH <- apply(PresAbs_BR_SH_WH[,-1], 2, sum)#
+rangeSize_NB_NH_WH <- apply(PresAbs_NB_NH_WH[,-1], 2, sum)#
+rangeSize_NB_SH_WH <- apply(PresAbs_NB_SH_WH[,-1], 2, sum)#
+rangeSize_BR_NH_EH <- apply(PresAbs_BR_NH_EH[,-1], 2, sum)#
+rangeSize_BR_SH_EH <- apply(PresAbs_BR_SH_EH[,-1], 2, sum)#
+rangeSize_NB_NH_EH <- apply(PresAbs_NB_NH_EH[,-1], 2, sum)#
+rangeSize_NB_SH_EH <- apply(PresAbs_NB_SH_EH[,-1], 2, sum)#
+rangeSizes_WH <- c(rangeSize_BR_NH_WH, rangeSize_BR_SH_WH, rangeSize_NB_NH_WH, rangeSize_NB_SH_WH)#
+rangeSizes_EH <- c(rangeSize_BR_NH_EH, rangeSize_BR_SH_EH, rangeSize_NB_NH_EH, rangeSize_NB_SH_EH)
 perm_NH_WH <- PresAbs_BR_NH_WH * PresAbs_NB_NH_WH#
 perm_NH_WH <- apply(perm_NH_WH[,-1], 2, sum)#
 rangeOverlap_NH_WH <- perm_NH_WH / (rangeSize_migra_BR_NH_WH + rangeSize_migra_NB_NH_WH - perm_NH_WH)#
@@ -99,6 +306,7 @@ perm_SH_WH <- apply(perm_SH_WH[,-1], 2, sum)#
 rangeOverlap_SH_WH <- perm_SH_WH / (rangeSize_migra_BR_SH_WH + rangeSize_migra_NB_SH_WH - perm_SH_WH)#
 rangeOverlap_SH_WH  <- rangeOverlap_SH_WH[-which(rangeOverlap_SH_WH == "NaN")]#
 #
+# Eastern Hemisphere#
 perm_NH_EH <- PresAbs_BR_NH_EH * PresAbs_NB_NH_EH#
 perm_NH_EH <- apply(perm_NH_EH[,-1], 2, sum)#
 rangeOverlap_NH_EH <- perm_NH_EH / (rangeSize_migra_BR_NH_EH + rangeSize_migra_NB_NH_EH - perm_NH_EH)#
@@ -106,37 +314,48 @@ rangeOverlap_NH_EH  <- rangeOverlap_NH_EH[-which(rangeOverlap_NH_EH == "NaN")]#
 perm_SH_EH <- PresAbs_BR_SH_EH * PresAbs_NB_SH_EH#
 perm_SH_EH <- apply(perm_SH_EH[,-1], 2, sum)#
 rangeOverlap_SH_EH <- perm_SH_EH / (rangeSize_migra_BR_SH_EH + rangeSize_migra_NB_SH_EH - perm_SH_EH)#
-rangeOverlap_SH_EH  <- rangeOverlap_SH_EH[-which(rangeOverlap_SH_EH == "NaN")]#
-#Select migratory species with less than 20% overlap between their breeding and non-breeding ranges#
+rangeOverlap_SH_EH  <- rangeOverlap_SH_EH[-which(rangeOverlap_SH_EH == "NaN")]
+perm_NH_WH <- PresAbs_BR_NH_WH * PresAbs_NB_NH_WH#
+perm_NH_WH <- apply(perm_NH_WH[,-1], 2, sum)#
+rangeOverlap_NH_WH <- perm_NH_WH / (rangeSize_BR_NH_WH + rangeSize_NB_NH_WH - perm_NH_WH)#
+rangeOverlap_NH_WH  <- rangeOverlap_NH_WH[-which(rangeOverlap_NH_WH == "NaN")]#
+perm_SH_WH <- PresAbs_BR_SH_WH * PresAbs_NB_SH_WH#
+perm_SH_WH <- apply(perm_SH_WH[,-1], 2, sum)#
+rangeOverlap_SH_WH <- perm_SH_WH / (rangeSize_BR_SH_WH + rangeSize_NB_SH_WH - perm_SH_WH)#
+rangeOverlap_SH_WH  <- rangeOverlap_SH_WH[-which(rangeOverlap_SH_WH == "NaN")]#
+#
+# Eastern Hemisphere#
+perm_NH_EH <- PresAbs_BR_NH_EH * PresAbs_NB_NH_EH#
+perm_NH_EH <- apply(perm_NH_EH[,-1], 2, sum)#
+rangeOverlap_NH_EH <- perm_NH_EH / (rangeSize_BR_NH_EH + rangeSize_NB_NH_EH - perm_NH_EH)#
+rangeOverlap_NH_EH  <- rangeOverlap_NH_EH[-which(rangeOverlap_NH_EH == "NaN")]#
+perm_SH_EH <- PresAbs_BR_SH_EH * PresAbs_NB_SH_EH#
+perm_SH_EH <- apply(perm_SH_EH[,-1], 2, sum)#
+rangeOverlap_SH_EH <- perm_SH_EH / (rangeSize_BR_SH_EH + rangeSize_NB_SH_EH - perm_SH_EH)#
+rangeOverlap_SH_EH  <- rangeOverlap_SH_EH[-which(rangeOverlap_SH_EH == "NaN")]
 selectedSpeciesNH_EH <- which(rangeOverlap_NH_EH < 0.2)#
 selectedSpeciesSH_EH <- which(rangeOverlap_SH_EH < 0.2)#
 selectedSpeciesNH_WH <- which(rangeOverlap_NH_WH < 0.2)#
-selectedSpeciesSH_WH <- which(rangeOverlap_SH_WH < 0.2)#
-#
-#correct mistakes in coding seasons#
-#Anthus hoeschi#
-selectedSpeciesSH_EH <-  c(selectedSpeciesSH_EH, selectedSpeciesNH_EH[29])#
-selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-29]#
+selectedSpeciesSH_WH <- which(rangeOverlap_SH_WH < 0.2)
+selectedSpeciesSH_EH <-  c(selectedSpeciesSH_EH, selectedSpeciesNH_EH[30])#
+selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-30]#
 #Gallinago.nigripennis#
-selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-159]#
+selectedSpeciesNH_EH <- selectedSpeciesNH_EH[-162]#
 #Pitta.moluccensis and Sylvia.cantillans #
-selectedSpeciesNH_EH <-  c(selectedSpeciesNH_EH, selectedSpeciesSH_EH[c(12,13)])#
-selectedSpeciesSH_EH <- selectedSpeciesSH_EH[-c(12,13)]#
-#Keep the presence-absence data only of selected species #
+selectedSpeciesNH_EH <-  c(selectedSpeciesNH_EH, selectedSpeciesSH_EH[c(13,14)])#
+selectedSpeciesSH_EH <- selectedSpeciesSH_EH[-c(13,14)]
 PresAbs_BR_NH_WH2 <- PresAbs_BR_NH_WH[,match(names(selectedSpeciesNH_WH), colnames(PresAbs_BR_NH_WH))]#
 PresAbs_NB_NH_WH2 <- PresAbs_NB_NH_WH[,match(names(selectedSpeciesNH_WH), colnames(PresAbs_NB_NH_WH))]#
-PresAbs_BR_NH_EH2 <- PresAbs_BR_NH_EH[,match(names(selectedSpeciesNH_EH)[1:380], colnames(PresAbs_BR_NH_EH))]#
-PresAbs_NB_NH_EH2 <- PresAbs_NB_NH_EH[,match(names(selectedSpeciesNH_EH)[1:380], colnames(PresAbs_NB_NH_EH))]#
-PresAbs_BR_NH_EH2 <- cbind(PresAbs_BR_NH_EH2, PresAbs_BR_SH_EH[,match(names(selectedSpeciesNH_EH)[381:382], colnames(PresAbs_BR_SH_EH))])#
-PresAbs_NB_NH_EH2 <- cbind(PresAbs_NB_NH_EH2, PresAbs_NB_SH_EH[,match(names(selectedSpeciesNH_EH)[381:382], colnames(PresAbs_NB_SH_EH))])#
+PresAbs_BR_NH_EH2 <- PresAbs_BR_NH_EH[,match(names(selectedSpeciesNH_EH)[1:386], colnames(PresAbs_BR_NH_EH))]#
+PresAbs_NB_NH_EH2 <- PresAbs_NB_NH_EH[,match(names(selectedSpeciesNH_EH)[1:386], colnames(PresAbs_NB_NH_EH))]#
+PresAbs_BR_NH_EH2 <- cbind(PresAbs_BR_NH_EH2, PresAbs_BR_SH_EH[,match(names(selectedSpeciesNH_EH)[387:388], colnames(PresAbs_BR_SH_EH))])#
+PresAbs_NB_NH_EH2 <- cbind(PresAbs_NB_NH_EH2, PresAbs_NB_SH_EH[,match(names(selectedSpeciesNH_EH)[387:388], colnames(PresAbs_NB_SH_EH))])#
 PresAbs_BR_SH_WH2 <- PresAbs_BR_SH_WH[,match(names(selectedSpeciesSH_WH), colnames(PresAbs_BR_SH_WH))]#
 PresAbs_NB_SH_WH2 <- PresAbs_NB_SH_WH[,match(names(selectedSpeciesSH_WH), colnames(PresAbs_NB_SH_WH))]#
-PresAbs_BR_SH_EH2 <- PresAbs_BR_SH_EH[,match(names(selectedSpeciesSH_EH)[1:11], colnames(PresAbs_BR_SH_EH))]#
-PresAbs_NB_SH_EH2 <- PresAbs_NB_SH_EH[,match(names(selectedSpeciesSH_EH)[1:11], colnames(PresAbs_NB_SH_EH))]#
-PresAbs_BR_SH_EH2 <- cbind(PresAbs_BR_SH_EH2, PresAbs_BR_NH_EH[,match(names(selectedSpeciesSH_EH)[12], colnames(PresAbs_BR_NH_EH))])#
-PresAbs_NB_SH_EH2 <- cbind(PresAbs_NB_SH_EH2, PresAbs_NB_NH_EH[,match(names(selectedSpeciesSH_EH)[12], colnames(PresAbs_NB_NH_EH))])#
-#
-#Remove species with 0 presences (or only 1 because it creates problems for the kernel estimation) for at least one season#
+PresAbs_BR_SH_EH2 <- PresAbs_BR_SH_EH[,match(names(selectedSpeciesSH_EH)[1:12], colnames(PresAbs_BR_SH_EH))]#
+PresAbs_NB_SH_EH2 <- PresAbs_NB_SH_EH[,match(names(selectedSpeciesSH_EH)[1:12], colnames(PresAbs_NB_SH_EH))]#
+PresAbs_BR_SH_EH2 <- cbind(PresAbs_BR_SH_EH2, PresAbs_BR_NH_EH[,match(names(selectedSpeciesSH_EH)[13], colnames(PresAbs_BR_NH_EH))])#
+PresAbs_NB_SH_EH2 <- cbind(PresAbs_NB_SH_EH2, PresAbs_NB_NH_EH[,match(names(selectedSpeciesSH_EH)[13], colnames(PresAbs_NB_NH_EH))])
 toremove_NH_WH <- which(apply(PresAbs_BR_NH_WH2, 2, sum)<=1 | apply(PresAbs_NB_NH_WH2, 2, sum)<=1)#
 if(length(toremove_NH_WH) > 0){#
 	PresAbs_BR_NH_WH2 <- PresAbs_BR_NH_WH2[,-toremove_NH_WH]#
@@ -158,7 +377,7 @@ if(length(toremove_SH_EH) > 0){#
 	PresAbs_NB_SH_EH2 <- PresAbs_NB_SH_EH2[,-toremove_SH_EH]#
 }
 nicheDensityRaster <- function(seasonalNiche){#
-	niche.kernel <- kde2d(seasonalNiche[,1], seasonalNiche[,2], n=20, h=1, lims=c(-3.7,1.5, -2.7,2.5)) #
+	niche.kernel <- kde2d(seasonalNiche[,1], seasonalNiche[,2], n=20, h=1, lims=c(-3.4,1.6, -3.3,1.4)) #
 	niche.kernel$z = niche.kernel$z/sum(niche.kernel$z)#
 	niche.raster <- raster(niche.kernel)#
 	threshold99=0; i=0#
@@ -171,22 +390,56 @@ nicheDensityRaster <- function(seasonalNiche){#
 	return(niche.raster)#
 }#
 #
-#Compute niche distances (using the earth mover's distance) for every migratory species#
-breeding.nichesNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempNS_WH[which(x==1)], PrecNS_WH[which(x==1)])))#
-nonbreeding.nichesNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempNW_WH[which(x==1)], PrecNW_WH[which(x==1)])))#
-breeding.nichesSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) nicheDensityRaster(cbind(TempNW_WH[which(x==1)], PrecNW_WH[which(x==1)])))#
-nonbreeding.nichesSH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) nicheDensityRaster(cbind(TempNS_WH[which(x==1)], PrecNS_WH[which(x==1)])))#
-breeding.nichesNH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) nicheDensityRaster(cbind(TempNS_EH[which(x==1)], PrecNS_EH[which(x==1)])))#
-nonbreeding.nichesNH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) nicheDensityRaster(cbind(TempNW_EH[which(x==1)], PrecNW_EH[which(x==1)])))#
-breeding.nichesSH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempNW_EH[which(x==1)], PrecNW_EH[which(x==1)])))#
-nonbreeding.nichesSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempNS_EH[which(x==1)], PrecNS_EH[which(x==1)])))#
+breeding.thermal.nichesNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_WH[which(x==1)], TempMinNS_WH[which(x==1)])))#
+nonbreeding.thermal.nichesNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_WH[which(x==1)], TempMinNW_WH[which(x==1)])))#
+breeding.thermal.nichesSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_WH[which(x==1)], TempMinNW_WH[which(x==1)])))#
+nonbreeding.thermal.nichesSH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_WH[which(x==1)], TempMinNS_WH[which(x==1)])))#
+breeding.thermal.nichesNH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_EH[which(x==1)], TempMinNS_EH[which(x==1)])))#
+nonbreeding.thermal.nichesNH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_EH[which(x==1)], TempMinNW_EH[which(x==1)])))#
+breeding.thermal.nichesSH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNW_EH[which(x==1)], TempMinNW_EH[which(x==1)])))#
+nonbreeding.thermal.nichesSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) nicheDensityRaster(cbind(TempMeanNS_EH[which(x==1)], TempMinNS_EH[which(x==1)])))
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)#
+thermal.distancesSH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)#
+thermal.distancesNH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)#
+thermal.distancesSH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_EH, Y=nonbreeding.thermal.nichesSH_EH)#
+thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
+library(emdist)
+install.packages(##  Thermal distance between breeding and non-breeding grounds  ##)
+install.packages("emdist")
+library(emdist)
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)#
+thermal.distancesSH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)#
+thermal.distancesNH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)#
+thermal.distancesSH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesSH_EH, Y=nonbreeding.thermal.nichesSH_EH)#
+thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
+dim()
+dim(breeding.thermal.nichesNH_WH)
+length(breeding.thermal.nichesNH_WH)
+head(breeding.thermal.nichesNH_WH)
+?emd
+class(breeding.thermal.nichesNH_WH)
+as.matrix(breeding.thermal.nichesNH_WH[[1]])
+emd(as.matrix(breeding.thermal.nichesNH_WH[[1]]), as.matrix(nonbreeding.thermal.nichesNH_WH[[1]]))
+dim(as.matrix(breeding.thermal.nichesNH_WH[[1]]))
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)
+breeding.habitatNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(habitat[which(x==1)]))#
+nonbreeding.habitatNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(habitat[which(x==1)]))#
+breeding.habitatSH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) mean(habitat[which(x==1)]))#
+nonbreeding.habitatSH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) mean(habitat[which(x==1)]))#
+breeding.habitatNH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) mean(habitat[which(x==1)]))#
+nonbreeding.habitatNH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) mean(habitat[which(x==1)]))#
+breeding.habitatSH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) mean(habitat[which(x==1)]))#
+nonbreeding.habitatSH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) mean(habitat[which(x==1)]))#
 #
-niche.distancesNH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.nichesNH_WH, Y=nonbreeding.nichesNH_WH)#
-niche.distancesSH_WH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.nichesSH_WH, Y=nonbreeding.nichesSH_WH)#
-niche.distancesNH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.nichesNH_EH, Y=nonbreeding.nichesNH_EH)#
-niche.distancesSH_EH <- mapply(function(X,Y){ emd(X,Y) }, X=breeding.nichesSH_EH, Y=nonbreeding.nichesSH_EH)#
-niche.distances.obs = c(niche.distancesNH_WH, niche.distancesNH_EH, niche.distancesSH_WH, niche.distancesSH_EH)#
-#Computing geographical (migration) distance for every migratory species#
+habitat.distancesNH_WH <- abs(breeding.habitatNH_WH - nonbreeding.habitatNH_WH)#
+habitat.distancesSH_WH <- abs(breeding.habitatSH_WH - nonbreeding.habitatSH_WH)#
+habitat.distancesNH_EH <- abs(breeding.habitatNH_EH - nonbreeding.habitatNH_EH)#
+habitat.distancesSH_EH <- abs(breeding.habitatSH_EH - nonbreeding.habitatSH_EH)#
+habitat.distances.obs = c(habitat.distancesNH_WH, habitat.distancesNH_EH, habitat.distancesSH_WH, habitat.distancesSH_EH)
+dim(habitat.distances.obs)
+length(habitat.distances.obs)
+head(habitat.distances.obs)
+hist(habitat.distances.obs)
 centroids.breeding.groundsNH_WH <- t(apply(PresAbs_BR_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
 centroids.nonbreeding.groundsNH_WH <- t(apply(PresAbs_NB_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
 centroids.breeding.groundsSH_WH <- t(apply(PresAbs_BR_SH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
@@ -200,8 +453,25 @@ geo.distancesNH_WH <- rdist.earth.vec(centroids.breeding.groundsNH_WH, centroids
 geo.distancesSH_WH <- rdist.earth.vec(centroids.breeding.groundsSH_WH, centroids.nonbreeding.groundsSH_WH, miles=F)#
 geo.distancesNH_EH <- rdist.earth.vec(centroids.breeding.groundsNH_EH, centroids.nonbreeding.groundsNH_EH, miles=F)#
 geo.distancesSH_EH <- rdist.earth.vec(centroids.breeding.groundsSH_EH, centroids.nonbreeding.groundsSH_EH, miles=F)#
-geo.distances.obs <- c(geo.distancesNH_WH, geo.distancesNH_EH, geo.distancesSH_WH, geo.distancesSH_EH)#
-#Computing resource scarcity for every migratory species#
+geo.distances.obs <- c(geo.distancesNH_WH, geo.distancesNH_EH, geo.distancesSH_WH, geo.distancesSH_EH)
+lonlat <- cbind(envData2$LONGITUDE, envData2$LATITUDE)#
+colnames(lonlat) <- c("LONGITUDE", "LATITUDE")#
+west_Hem <- lonlat[which(lonlat[,1]<=-30),]  # subset for Western Hemisphere#
+east_Hem <- lonlat[which(lonlat[,1]>-30),]   # subset for Eastern Hemisphere
+centroids.breeding.groundsNH_WH <- t(apply(PresAbs_BR_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
+centroids.nonbreeding.groundsNH_WH <- t(apply(PresAbs_NB_NH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
+centroids.breeding.groundsSH_WH <- t(apply(PresAbs_BR_SH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
+centroids.nonbreeding.groundsSH_WH <- t(apply(PresAbs_NB_SH_WH2, 2, function(x) apply(west_Hem[which(x==1),], 2, mean)))#
+centroids.breeding.groundsNH_EH <- t(apply(PresAbs_BR_NH_EH2, 2, function(x) apply(east_Hem[which(x==1),], 2, mean)))#
+centroids.nonbreeding.groundsNH_EH <- t(apply(PresAbs_NB_NH_EH2, 2, function(x) apply(east_Hem[which(x==1),], 2, mean)))#
+centroids.breeding.groundsSH_EH <- t(apply(PresAbs_BR_SH_EH2, 2, function(x) apply(east_Hem[which(x==1),], 2, mean)))#
+centroids.nonbreeding.groundsSH_EH <- t(apply(PresAbs_NB_SH_EH2, 2, function(x) apply(east_Hem[which(x==1),], 2, mean)))#
+#
+geo.distancesNH_WH <- rdist.earth.vec(centroids.breeding.groundsNH_WH, centroids.nonbreeding.groundsNH_WH, miles=F)#
+geo.distancesSH_WH <- rdist.earth.vec(centroids.breeding.groundsSH_WH, centroids.nonbreeding.groundsSH_WH, miles=F)#
+geo.distancesNH_EH <- rdist.earth.vec(centroids.breeding.groundsNH_EH, centroids.nonbreeding.groundsNH_EH, miles=F)#
+geo.distancesSH_EH <- rdist.earth.vec(centroids.breeding.groundsSH_EH, centroids.nonbreeding.groundsSH_EH, miles=F)#
+geo.distances.obs <- c(geo.distancesNH_WH, geo.distancesNH_EH, geo.distancesSH_WH, geo.distancesSH_EH)
 breeding.resource.scarcityNH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))#
 nonbreeding.resource.scarcityNH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))#
 resource.scarcityNH_WH <- breeding.resource.scarcityNH_WH + nonbreeding.resource.scarcityNH_WH#
@@ -214,98 +484,138 @@ resource.scarcityNH_EH <- breeding.resource.scarcityNH_EH + nonbreeding.resource
 breeding.resource.scarcitySH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) mean(resourceScarcity_NW_EH[which(x==1)]))#
 nonbreeding.resource.scarcitySH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) mean(resourceScarcity_NS_EH[which(x==1)]))#
 resource.scarcitySH_EH <- breeding.resource.scarcitySH_EH + nonbreeding.resource.scarcitySH_EH#
-resource.scarcity.obs <- c(resource.scarcityNH_WH, resource.scarcityNH_EH, resource.scarcitySH_WH, resource.scarcitySH_EH)#
-### Figure 3 - trade-off ### #
+resource.scarcity.obs <- c(resource.scarcityNH_WH, resource.scarcityNH_EH, resource.scarcitySH_WH, resource.scarcitySH_EH)
+class(breeding.thermal.nichesNH_WH)
+class(breeding.thermal.nichesNH_WH[[1]])
+? emd
+emd2d(breeding.thermal.nichesNH_WH[[1]], nonbreeding.thermal.nichesNH_WH[[1]])
+dim(nonbreeding.thermal.nichesNH_WH[[1]])
+emd2d(as.matrix(breeding.thermal.nichesNH_WH[[1]]), as.matrix(nonbreeding.thermal.nichesNH_WH[[1]]))
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd2d(X,Y) }, X=as.matrix(breeding.thermal.nichesNH_WH), Y=as.matrix(nonbreeding.thermal.nichesNH_WH))
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)
+hist(thermal.distancesNH_WH)
+thermal.distancesNH_WH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesNH_WH, Y=nonbreeding.thermal.nichesNH_WH)#
+thermal.distancesSH_WH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesSH_WH, Y=nonbreeding.thermal.nichesSH_WH)#
+thermal.distancesNH_EH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesNH_EH, Y=nonbreeding.thermal.nichesNH_EH)#
+thermal.distancesSH_EH <- mapply(function(X,Y){ emd2d(as.matrix(X),as.matrix(Y)) }, X=breeding.thermal.nichesSH_EH, Y=nonbreeding.thermal.nichesSH_EH)#
+thermal.distances.obs = c(thermal.distancesNH_WH, thermal.distancesNH_EH, thermal.distancesSH_WH, thermal.distancesSH_EH)
+par(mfrow=c(1,1), mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))#
+hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")#
+axis(side=4)#
+axis(side=1)#
+par(new=T)#
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.9, cex.lab=1, col="yellow")#
+axis(side=2)
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[4])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[4])], col="orange", cex= 0.9, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[3])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[3])], col="red", cex= 0.9, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[2])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[2])], col="brown4", cex= 0.9, cex.lab=1.1, pch=20)#
+mtext("Number of species", side=4, line=1.4, cex=1,las=0)#
+legend("topright", inset=.005, bg="white", box.col="white", title="Thermal distance", c(paste("<", round(quantile(thermal.distances.obs)[2], 2), sep=" "), paste(round(quantile(thermal.distances.obs)[2], 2), round(quantile(thermal.distances.obs)[3], 2), sep="–"), paste(round(quantile(thermal.distances.obs)[3], 2), round(quantile(thermal.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(thermal.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.9)
+par(mfrow=c(4,2), mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))#
 #
-par(mfrow=c(2,2), mar=c(2.5,3,1.5,3), mgp=c(1.5,0.5,0))#
-# Relationship between geographical distance and niche distance#
-plot(sqrt(geo.distances.obs), niche.distances.obs, xlim=c(0,120), ylim=c(0,3.1), xlab="Geographical distance (square-root)", ylab="Niche distance", main="", xaxt="n", axes=F, pch=20, cex=0.7)#
+# Relationship between geographical distance and thermal distance#
+plot(sqrt(geo.distances.obs), thermal.distances.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
 axis(side=2)#
 axis(side=1)#
-mod = lm(niche.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))#
+mod = lm(thermal.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))#
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")#
-mtext("A", cex=1.3, side=3, line=0, at=-22)#
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.6, at=30)#
-# Relationship between niche distance and resource scarcity#
-plot(niche.distances.obs, resource.scarcity.obs, xlim=c(0,3.1), ylim=c(-63,21), xlab="Niche distance", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7)#
+mtext("A", cex=1.3, side=3, line=0, at=-20)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=20)#
+#
+# Relationship between resource scarcity and thermal distance#
+plot(resource.scarcity.obs, thermal.distances.obs, xlab="Resource scarcity", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
 axis(side=2)#
 axis(side=1)#
-mod = lm(resource.scarcity.obs ~ niche.distances.obs + I(niche.distances.obs^2))#
-lines(sort(niche.distances.obs), fitted(mod)[order(niche.distances.obs)], type="l", col="red")#
-mtext("B", cex=1.3, side=3, line=0, at=-0.55)#
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-6, at=2.6)#
+mod = lm(thermal.distances.obs ~ resource.scarcity.obs + I(resource.scarcity.obs^2))#
+lines(sort(resource.scarcity.obs), fitted(mod)[order(resource.scarcity.obs)], type="l", col="red")#
+mtext("B", cex=1.3, side=3, line=0, at=-80)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=5)#
+#
+# Relationship between geographical distance and habitat distance#
+plot(sqrt(geo.distances.obs), habitat.distances.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Habitat distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
+axis(side=2)#
+axis(side=1)#
+mod = lm(habitat.distances.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))#
+lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")#
+mtext("C", cex=1.3, side=3, line=0, at=-20)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=20)#
+#
+# Relationship between resource scarcity and habitat distance#
+plot(resource.scarcity.obs, habitat.distances.obs, xlab="Resource scarcity", ylab="Habitat distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
+axis(side=2)#
+axis(side=1)#
+mod = lm(habitat.distances.obs ~ resource.scarcity.obs + I(resource.scarcity.obs^2))#
+lines(sort(resource.scarcity.obs), fitted(mod)[order(resource.scarcity.obs)], type="l", col="red")#
+mtext("D", cex=1.3, side=3, line=0, at=-80)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1, at=-45)#
+#
 # Relationship between geographical distance and resource scarcity#
-plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7)#
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
 axis(side=2)#
 axis(side=1)#
 mod = lm(resource.scarcity.obs ~ sqrt(geo.distances.obs) + I(sqrt(geo.distances.obs)^2))#
 lines(sort(sqrt(geo.distances.obs)), fitted(mod)[order(sqrt(geo.distances.obs))], type="l", col="red")#
-mtext("C", cex=1.3, side=3, line=0, at=-22)#
-mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.5, at=90)#
-# Relationship between the three factors#
+mtext("E", cex=1.3, side=3, line=0, at=-20)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=1, line=-1.5, at=20)#
+#
+# Relationship between habitat distance and thermal distance#
+plot(habitat.distances.obs, thermal.distances.obs, xlab="Habitat distance", ylab="Thermal distance", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1)#
+axis(side=2)#
+axis(side=1)#
+mod = lm(thermal.distances.obs ~ habitat.distances.obs + I(habitat.distances.obs^2))#
+lines(sort(habitat.distances.obs), fitted(mod)[order(habitat.distances.obs)], type="l", col="red")#
+mtext("F", cex=1.3, side=3, line=0, at=-0.1)#
+mtext(bquote(R^2 == .(round(summary(mod)$r.squared,2))), cex=1, side=3, line=-1.5, at=0.45)#
+#
+# Relationship between three factors (geographical distance, resource scarcity and thermal distance)#
 hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")#
 axis(side=4)#
 axis(side=1)#
-par(new=T, mar=c(2.5,3,1.5,3), mgp=c(1.5,0.5,0))#
-plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), ylim=c(-63,21), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.7, col="yellow")#
+par(new=T, mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))#
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1, col="yellow")#
 axis(side=2)#
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[4])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[4])], col="orange", cex=0.7, pch=20)#
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[3])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[3])], col="red", cex=0.7, pch=20)#
-points(sqrt(geo.distances.obs)[which(niche.distances.obs < quantile(niche.distances.obs)[2])], resource.scarcity.obs[which(niche.distances.obs < quantile(niche.distances.obs)[2])], col="brown4", cex=0.7, pch=20)#
-mtext("D", cex=1.3, side=3, line=0, at=-22)#
-mtext("Number of species", side=4, line=1.4, cex=0.85,las=0)#
-legend("topright", inset=.005, bg="white", box.col="white", title="Niche distance", c(paste("<", round(quantile(niche.distances.obs)[2], 2), sep=" "), paste(round(quantile(niche.distances.obs)[2], 2), round(quantile(niche.distances.obs)[3], 2), sep="–"), paste(round(quantile(niche.distances.obs)[3], 2), round(quantile(niche.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(niche.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.8)
-minNDVI <- min(NDVI_NS, NDVI_NW)
-length(minNDVI)
-minNDVI <- pmin(NDVI_NS, NDVI_NW)
-length(minNDVI)
-head(minNDVI)
-PresAbs_residents <- read.table("PresAbs_res.txt", header=T)
-PresAbs_residents <- read.table("PresAbs_res.txt", header=T)
-dim(PresAbs_residents)
-richness.residents <- apply(PresAbs_residents, 1, sum)
-length(richness.residents)
-PresAbs_residents <- PresAbs_residents[-which(envData$Tmean_NW==0 & envData$Tmean_NS==0),]
-dim(PresAbs_residents)
-richness.residents <- apply(PresAbs_residents, 1, sum)
-summary(lm(richness.residents ~ minNDVI))
-summary(lm(minNDVI ~ richness.residents))
-plot(lonlat[,2], richness.residents)
-PresAbs_residents[1:5,1:5]
-PresAbs_NB_SH[1:5,1:5]
-richness.residents <- apply(PresAbs_residents[,-1], 1, sum)
-summary(lm(richness.residents ~ minNDVI))
-plot(lonlat[,2], richness.residents)
-plot(lonlat[,2], minNDVI)
-plot(minNDVI, richness.residents)
-plot(lonlat[,2], minNDVI)
-plot(lonlat[,2], NDVI_NW)
-plot(lonlat[,2], minNDVI)
-plot(lonlat[,2], NDVI_NW)
-plot(lonlat[,2], NDVI_NW)
-plot(lonlat[,2], minNDVI)
-summary(lm(richness.residents ~ minNDVI-1))
-?lm
-breeding.resource.scarcity.residentinNB.NH_WH <- apply(PresAbs_NB_NH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))#
-nonbreeding.resource.scarcity.residentinBR.NH_WH <- apply(PresAbs_BR_NH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))#
-resource.scarcity.residentinNB.NH_WH <- breeding.resource.scarcity.residentinNB.NH_WH + nonbreeding.resource.scarcityNH_WH#
-resource.scarcity.residentinBR.NH_WH <- breeding.resource.scarcityNH_WH + nonbreeding.resource.scarcity.residentinBR.NH_WH#
-breeding.resource.scarcity.residentinNB.SH_WH <- apply(PresAbs_NB_SH_WH2, 2, function(x) mean(resourceScarcity_NW_WH[which(x==1)]))#
-nonbreeding.resource.scarcity.residentinBR.SH_WH <- apply(PresAbs_BR_SH_WH2, 2, function(x) mean(resourceScarcity_NS_WH[which(x==1)]))#
-resource.scarcity.residentinNB.SH_WH <- breeding.resource.scarcity.residentinNB.SH_WH + nonbreeding.resource.scarcitySH_WH#
-resource.scarcity.residentinBR.SH_WH <- breeding.resource.scarcitySH_WH + nonbreeding.resource.scarcity.residentinBR.SH_WH#
-breeding.resource.scarcity.residentinNB.NH_EH <- apply(PresAbs_NB_NH_EH2, 2, function(x) mean(resourceScarcity_NS_EH[which(x==1)]))#
-nonbreeding.resource.scarcity.residentinBR.NH_EH <- apply(PresAbs_BR_NH_EH2, 2, function(x) mean(resourceScarcity_NW_EH[which(x==1)]))#
-resource.scarcity.residentinNB.NH_EH <- breeding.resource.scarcity.residentinNB.NH_EH + nonbreeding.resource.scarcityNH_EH#
-resource.scarcity.residentinBR.NH_EH <- breeding.resource.scarcityNH_EH + nonbreeding.resource.scarcity.residentinBR.NH_EH#
-breeding.resource.scarcity.residentinNB.SH_EH <- apply(PresAbs_NB_SH_EH2, 2, function(x) mean(resourceScarcity_NW_EH[which(x==1)]))#
-nonbreeding.resource.scarcity.residentinBR.SH_EH <- apply(PresAbs_BR_SH_EH2, 2, function(x) mean(resourceScarcity_NS_EH[which(x==1)]))#
-resource.scarcity.residentinNB.SH_EH <- breeding.resource.scarcity.residentinNB.SH_EH + nonbreeding.resource.scarcitySH_EH#
-resource.scarcity.residentinBR.SH_EH <- breeding.resource.scarcitySH_EH + nonbreeding.resource.scarcity.residentinBR.SH_EH
-resource.scarcity.residentinNB <- c(resource.scarcity.residentinNB.NH_WH, resource.scarcity.residentinNB.NH_EH, resource.scarcity.residentinNB.SH_WH, resource.scarcity.residentinNB.SH_EH)#
-resource.scarcity.residentinBR <- c(resource.scarcity.residentinBR.NH_WH, resource.scarcity.residentinBR.NH_EH, resource.scarcity.residentinBR.SH_WH, resource.scarcity.residentinBR.SH_EH)
-resource.scarcity.residentinNB
-hist(resource.scarcity.residentinNB)
-hist(resource.scarcity.residentinBR)
-t.test(resource.scarcity.obs, resource.scarcity.residentinNB, "less")#
-t.test(resource.scarcity.obs, resource.scarcity.residentinBR, "less")
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[4])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[4])], col="orange", cex=0.6, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[3])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[3])], col="red", cex=0.6, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(thermal.distances.obs < quantile(thermal.distances.obs)[2])], resource.scarcity.obs[which(thermal.distances.obs < quantile(thermal.distances.obs)[2])], col="brown4", cex=0.6, cex.lab=1.1, pch=20)#
+mtext("G", cex=1.3, side=3, line=0, at=-20)#
+mtext("Number of species", side=4, line=1.4, cex=0.7,las=0)#
+legend("topright", inset=.005, bg="white", box.col="white", title="Thermal distance", c(paste("<", round(quantile(thermal.distances.obs)[2], 2), sep=" "), paste(round(quantile(thermal.distances.obs)[2], 2), round(quantile(thermal.distances.obs)[3], 2), sep="–"), paste(round(quantile(thermal.distances.obs)[3], 2), round(quantile(thermal.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(thermal.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.7)#
+#
+# Relationship between three factors (geographical distance, resource scarcity and habitat distance)#
+hist(sqrt(geo.distances.obs), xlim=c(0,120), xlab="", ylab="", main="", xaxt="n", axes=F, col="light grey", border="grey")#
+axis(side=4)#
+axis(side=1)#
+par(new=T, mar=c(2.9,3,1.5,3), mgp=c(1.5,0.5,0))#
+plot(sqrt(geo.distances.obs), resource.scarcity.obs, xlim=c(0,120), xlab="Geographical distance (square-root)", ylab="Resource scarcity", main="", xaxt="n", axes=F, pch=20, cex=0.6, cex.lab=1.1, col="yellow")#
+axis(side=2)#
+points(sqrt(geo.distances.obs)[which(habitat.distances.obs < quantile(habitat.distances.obs)[4])], resource.scarcity.obs[which(habitat.distances.obs < quantile(habitat.distances.obs)[4])], col="orange", cex=0.6, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(habitat.distances.obs < quantile(habitat.distances.obs)[3])], resource.scarcity.obs[which(habitat.distances.obs < quantile(habitat.distances.obs)[3])], col="red", cex=0.6, cex.lab=1.1, pch=20)#
+points(sqrt(geo.distances.obs)[which(habitat.distances.obs < quantile(habitat.distances.obs)[2])], resource.scarcity.obs[which(habitat.distances.obs < quantile(habitat.distances.obs)[2])], col="brown4", cex=0.6, cex.lab=1.1, pch=20)#
+mtext("H", cex=1.3, side=3, line=0, at=-20)#
+mtext("Number of species", side=4, line=1.4, cex=0.7,las=0)#
+legend("topright", inset=.005, bg="white", box.col="white", title="Habitat distance", c(paste("<", round(quantile(habitat.distances.obs)[2], 2), sep=" "), paste(round(quantile(habitat.distances.obs)[2], 2), round(quantile(habitat.distances.obs)[3], 2), sep="–"), paste(round(quantile(habitat.distances.obs)[3], 2), round(quantile(habitat.distances.obs)[4], 2), sep="–"), paste(">", round(quantile(habitat.distances.obs)[4], 2), sep=" ")), fill=c("brown4", "red", "orange", "yellow"), cex=0.7)
+# Western Hemisphere#
+pairwise.distance.WH <- rdist.earth(west_Hem, miles=F)#
+diag(pairwise.distance.WH) <- 0#
+pairwise.distance.WH.01 <- apply(pairwise.distance.WH, 2, function(x) ifelse(x<250 & x>0, 1, 0))#
+neig.list_WH <- apply(pairwise.distance.WH.01, 2, function(x) which(x==1))#
+#
+# Eastern Hemisphere#
+pairwise.distance.EH <- rdist.earth(east_Hem, miles=F)#
+diag(pairwise.distance.EH) <- 0#
+pairwise.distance.EH.01 <- apply(pairwise.distance.EH, 2, function(x) ifelse(x<250 & x>0, 1, 0))#
+neig.list_EH <- apply(pairwise.distance.EH.01, 2, function(x) which(x==1))
+pairwise.bearingsWH = t(apply(west_Hem, 1, function(x) bearingRhumb(x, west_Hem)))#
+pairwise.bearingsEH = t(apply(east_Hem, 1, function(x) bearingRhumb(x, east_Hem)))
+geo.distances.obs_WH <- c(geo.distancesNH_WH, geo.distancesSH_WH) #
+geo.distances.obs_EH <- c(geo.distancesNH_EH, geo.distancesSH_EH)#
+thermal.distances.obs_WH <- c(thermal.distancesNH_WH, thermal.distancesSH_WH) #
+thermal.distances.obs_EH <- c(thermal.distancesNH_EH, thermal.distancesSH_EH) #
+resource.scarcity.obs_WH <- c(resource.scarcityNH_WH, resource.scarcitySH_WH) #
+resource.scarcity.obs_EH <- c(resource.scarcityNH_EH, resource.scarcitySH_EH) #
+geo.distances.simulated_WH <- c(geo.distances.simulatedNH_WH, geo.distances.simulatedSH_WH)#
+geo.distances.simulated_EH <- c(geo.distances.simulatedNH_EH, geo.distances.simulatedSH_EH)#
+thermal.distances.simulated_WH <- c(thermal.distances.simulatedNH_WH, thermal.distances.simulatedSH_WH)#
+thermal.distances.simulated_EH <- c(thermal.distances.simulatedNH_EH, thermal.distances.simulatedSH_EH)#
+resource.scarcity.simulated_WH <- c(resource.scarcity.simulatedNH_WH, resource.scarcity.simulatedSH_WH)#
+resource.scarcity.simulated_EH <- c(resource.scarcity.simulatedNH_EH, resource.scarcity.simulatedSH_EH)
